@@ -1,0 +1,80 @@
+/** \page subscribe Exchanging data
+\date January 2012
+\version 1.0
+
+In BALTRAD, you control \b who is allowed access to \b what. We recognize
+that we live in an international world where we benefit from exchanging
+data with peer organizations abroad. Consequently, we need to
+have confidence that this exchange of data \b won't allow others to access
+unauthorized data, and that it \b will ensure that we don't receive data we
+didn't ask for. Not least, we want safe, simple, and efficient data
+exchange in real time. We do this using <b>catalog subscription</b>. A
+<b>data source</b> is the same thing as a catalog entry in this context.
+
+The first mandatory step, that leads to being able to subscribe to data, is
+\ref sec_peer. Only after you've succeeded with this step can you continue.
+
+\li \ref sub_ap
+\li \ref sub_con
+\li \ref sub_mnr
+\li \ref sub_mnl
+
+\section sub_ap Allowing a new peer user to subscribe to your data
+The description of the procedure for this is almost identical to the
+configuration procedure to \ref con_ds. There are only two minor issues to
+keep in mind:
+\li You can either "Add" a new data source to the catalog or "Edit" an
+existing one. 
+\li You will see the new peer user in the drop-down list of users to
+associate with a given data source.
+
+\section sub_con Accessing a remote node's catalog and subscribing to data
+After you have successfully connected to a remote node for the first time,
+it is up to that node's administrator to allow you to subscribe to that
+node's data. The remote node's administrator will follow the procedure in
+the previous section and allow your peer user on that node to subscribe to
+some data sources. The remote node's administrator must then inform you
+that it is now safe to connect again and subscribe.
+
+In the web-based user interface, go to "Exchange" --> "Connect", and this
+time select from the drop-down list under "Select connection". The remote
+node's name should appear in this list. Select it and press the "Connect"
+button. In the following example, the node has connected to a node called
+"Sweden" that has allowed us to subscribe to polar scans from a Swedish radar.
+\image html subscribe_list.png
+Check the "Select" box and then the "OK" button, you confirm, and that's
+it. You've subscribed.
+
+Confirm for yourself by going to "Exchange" --> "Subscriptions" to see the
+overall list of subscriptions.
+
+\section sub_mnr Managing your subscriptions on remote nodes
+Once you have connected to a remote node and subscribed to data, you cannot
+resubscribe to the same data. Trying to do this will result in an error
+message. Instead, the way to cancel a subscription is to go to "Exchange"
+--> "Subscriptions" and uncheck the box of the catalog entry you no longer
+want. That will result in your node telling the remote one to stop sending
+those data.
+
+If you accidently clear the database table containing your subscriptions to
+data from remote nodes, then you will have the unusual situation where you
+can receive data from remote nodes without your node having corresponding
+subscription records. This can happen if you upgrade or reinstall a node
+with the \c --reinstalldb option, which should therefore be used with
+caution. If this happens, contact the human beings managing the remote
+nodes and ask them to remove your subscriptions for you. After that, you
+can resubscribe.
+
+\section sub_mnl Managing others' subscriptions on your node
+Don't remove other nodes' subscriptions to your data unless by
+agreement with someone running the other node. If a situation arises where
+the database table is reinstalled on a remote node that contained
+subscriptions to your node's data. In these circumstances, your node may be
+sending data to the remote node, and the remote node can't resubscribe
+because your node already has a record of that subscription. It is then
+advisable to go to "Settings" --> "Subscriptions" --> "Upload" and remove
+any "ghost" subscriptions.
+
+If you haven't seen to it already, now would be a good time to \ref con_clean.
+
+ */

@@ -1,0 +1,22 @@
+/** \page help Getting post-installation help
+\date January 2012
+\version 1.0
+
+The various subsystems' built-in documentation will be generated
+automatically during \ref install. This is detailed technical documentation
+at the subsystem level, so it won't necessarily give you the overall
+context that this user guide does. It is instead the place to dive in deep to
+learn the nuts and bolts of the system's machinery.
+
+Once you have installed your node successfully,
+and you have logged into it for the first time using user name
+"admin" and password "baltrad" (you should immediately \ref con_pwd), the
+documentation is accessible by clicking the "Help" link in the upper-right
+corner of the page. It should look something like this:
+\image html help.png
+
+The on-line link to this starting point for this version is:
+
+http://git.baltrad.eu/manual/index.html
+
+ */

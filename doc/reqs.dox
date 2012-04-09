@@ -1,0 +1,164 @@
+/** \page req Requirements
+\date January 2012
+\version 1.0
+
+\li \ref req_hw
+\li \ref req_nw
+\li \ref req_sw
+
+\section req_hw Hardware requirements
+You probably already have a supplier of computer hardware, and your
+organization may have its opinions about what kinds of machines they want
+to manage in the computer hall and on the desktop. We don't interfere with
+this, but instead try to work on whatever is available. And this will
+be different in different places. A researcher might want to demonstrate
+the system on a notebook computer at a conference; this is no
+problem. Others may prefer desktop computers, tower models, rack servers,
+blades, and even virtual computers on shared hardware. These are all
+fine. We haven't yet deployed our system on industrial hardware like a
+single-board hardware configuration, but we doubt there are any problems
+here either. In the end, it's up to you to decide and get what works best
+for your purposes.
+
+However, hardware performance will be an issue depending on how much data
+you plan on exchanging and processing with your node. With this in mind,
+here are some general guidelines. Keep in mind that these are not hard
+requirements, but based on what we are confident will work. In almost every
+case, requirements are modest.
+\htmlonly
+<table border="1">
+<tr><th>Use</th> <th>CPU</th> <th>RAM</th> <th>Disk</th></tr>
+<tr><td>Exchange: 20 radars</td> <td>one dual- or quad-core, >2 GHz</td>
+<td>4-6 Gb</td> <td>50 Gb</td></tr>
+<tr><td>Exchange: 175 radars</td> <td>1-2 dual- or quad-core, >2 GHz</td>
+<td>6-8 Gb</td> <td>100 Gb</td></tr>
+<tr><td>Exchange & processing: 20 radars</td> <td>one quad-core, >2.5 GHz</td>
+<td>8-10 Gb</td> <td>200 Gb</td></tr>
+<tr><td>Exchange & processing: 175 radars</td> <td>1-2 quad-core,
+>2.5 GHz</td> <td>10-12 Gb</td> <td>>500 Gb</td></tr>
+</table>
+\endhtmlonly
+
+For high-resilience solutions, at least duplicated hardware is
+recommended. Disks should be RAIDed, and using a Storage Area Network (SAN)
+is a good way for multiple hardware instances to share disk space. We do
+not recommend you install and use our software over networked file 
+systems like NFS because they have a tendency to cause significant
+performance bottlenecks.
+
+Note that disk-space estimates in the table above assume no archive because
+BALTRAD doesn't do archiving.
+
+In all cases, an Ethernet adapter is required. For a more resilient
+solution, redundant adapters are recommended. See the next section for
+more detail on network requirements. Using BALTRAD over a WiFi connection
+is not recommended.
+
+\section req_nw Network requirements
+
+BALTRAD uses TCP/IP-based networks.
+
+Network bandwidth needs are notoriously difficult to determine because they
+depends on factors that we have difficulty quantifying. You can estimate
+the total amount of data by multiplying the following terms:
+\li Bins per ray
+\li Rays per scan
+\li Variables per scan, e.g. DBZH, VRAD, WRAD, etc.
+\li Bytes per bin, e.g. 1 (uint8), 2 (short), 4 (float), or 8 (double)
+\li Scans per volume or acquisition period
+\li Radars in the network
+
+Optionally, you can then pad your estimate with a guess of how much
+metadata the ODIM_H5 files will contain, but this is negligable compared to
+the amount of data. File overhead caused by metadata can be minimized be
+using HDF5's file-creation properties intelligently, and this is what the
+BALTRAD code base does.
+
+The number that this arithmetic exercise gives you will be the total number
+of bytes per acquisition period, e.g. every 5, 10, or 15 minutes. Multiply
+by time to get hourly, daily, and longer estimates.
+
+ODIM_H5 uses default ZLIB compression in HDF5, and this compression is both
+efficient and lossless. However, like most other compression algorithms,
+ZLIB's efficiency will depend on the characteristics of the data. Lots of
+echoes will give relatively larger files. Dry days will be more efficiently
+compressed than wet ones. But on the whole, compressed files with optimized
+file-creation properties can be easily 10-20% the size of uncompressed
+files. Generally speaking, this will make them easier to transmit through
+the network because they will consume less bandwidth.
+
+A very easy and efficient way of reducing bandwidth bottlenecks in data
+exchange is to transmit radar data scanwise, ie. one scan at a time. Doing
+this only makes sense if the radar can send you the data scanwise. There's
+little point in deconstructing a polar volume if that's the only thing the
+radar sends you. But if the radar can send you a scan while it proceeds to
+collect the next one, then that saved you time, and the network load is
+more balanced compared to transmitting a complete volume all at once.
+
+Internet bandwidth is pretty inexpensive these days, whereas dedicated
+network bandwidth can be costly (e.g. the RMDCN in Europe). We have no hard
+requirements, only experience. A 64 kbit/s network connection will probably
+be sufficient to support the exchange of data from a few radars, whereas a
+10 Mbit/s connection might be enough to support the continental
+scale. There are uncertainties in these estimates that need more time to be
+clarified.
+
+For redundant hardware configurations, communications between node
+instances should use at least a Gigabit local-area network (LAN).
+
+\section req_sw Software requirements
+
+We have developed our software for Linux, and to our knowledge BALTRAD
+software is running on Ubuntu, Debian, Red Hat Enterprise, and CentOS. Most
+of our packages run on Mac OS X too, although the complete suite hasn't
+been validated on it yet. Our software may run on proprietary flavors of
+UNIX, but we have conducted no development or testing on any.
+
+Any credible 64-bit Linux distribution will have no difficulty accommodating
+BALTRAD software. One of the distributions mentioned above in \ref faq_os
+will definitely work because it works for us already. The software will
+likely work on the 32-bit versions of the same distro, but some of the
+software's unit tests will fail.
+
+The BALTRAD installation notes that accompany the software packages contain
+complete details on requirements. They are usually found in a text file
+called INSTALL.
+
+A critical software requirement when using the system in real time is
+access to a Postgres database server version 8.3.9 or higher, preferably
+8.4+. This database server does not need to be installed on the same server
+as the software is installed on, but it must be accessible. This requirement is
+not needed if you are not going to exchange any data but instead just
+process data off line.
+
+Other required software can be managed with your distro's preferred package
+manager, e.g. RPM, yum, apt-get, etc.
+
+\li An installed Java SDK, currently OpenJDK or SUN JDK (> 1.6)
+\li gcc/g++/gcc-c++ (version 4.1 or higher)
+\li Gnu make (version 3.8 or higher)
+\li autoconf (version 2.59 or higher)
+\li Unicode support (ICU)
+\li bzip2 development libraries
+\li Postgres development libraries
+\li Doxygen
+
+You might also need to install additional packages since one or more modules
+depend on them:
+\li PNG development libraries (used by e.g. bRopo)
+
+Make sure you install 64-bit versions of these packages where they exist.
+
+In choosing programming languages, we let ourselves be inspired by Google,
+who use three of them. The ones we have chosen are C/C++, <a
+href="http://java.com/" target="_blank">Java</a>, and 
+<a href="http://python.org/" target="_blank">Python</a>. The amount of C++
+code has dropped recently after we migrated one of our core subsystems to
+Python and Java, so C++ is no longer part of the core system. 
+
+We also use some other other scripting tools for specific purposes. For
+example, <a href="http://groovy.codehaus.org/" target="_blank">Groovy
+scripting</a> (based on Java) is used for prototyping well-defined tasks.
+
+
+ */

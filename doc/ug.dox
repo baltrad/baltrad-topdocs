@@ -1,0 +1,40 @@
+/** \page ug User Guide
+\date January 2012
+\version 1.0
+
+Welcome to the BALTRAD User Guide. This documentation is designed
+to assist you with the most common tasks you undertake with BALTRAD
+software. We treat the so-called BALTRAD \a node as a unit, although we
+already know that it consists of several subsystems. The overall objective
+is to install, configure, and operate this node for the purposes of
+exchanging weather radar data with other nodes, and processing all data 
+locally with yours. We assume you have already been introduced to our
+software by reading the answers to the \ref faq, and that you are ready for
+more detail.
+
+Please keep in mind that the information presented here will remain at a
+relatively general level, and that you will refer to each subsystem's
+documentation package for the highest level of detail, e.g. application
+programming interfaces (APIs). These documentation packages are built
+automatically when you download and install the node. What those
+documentation packages don't provide, but that we intend to, is to give
+some necessary overall context.
+
+\ref req
+
+\ref install
+
+\ref help
+
+\ref config
+
+\ref secure
+
+\ref subscribe
+
+\ref pgf
+
+\ref dist
+
+
+ */

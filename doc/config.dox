@@ -1,0 +1,183 @@
+/** \page config Configuration
+\date January 2012
+\version 1.0
+
+Congratulations! If you've come this far, it means you've succesfully
+followed the instructions in \ref install and you have a node that is up and
+running. Your next responsibility is to configure it both for increased
+safety and to get it working. This involves a bit of manual labour, given
+in the following sections.
+
+\li \ref con_pwd
+\li \ref con_ns
+\li \ref con_os
+\li \ref con_rad
+\li \ref con_ds
+\li \ref con_lr
+\li \ref con_dr
+\li \ref con_dat
+\li \ref con_clean
+
+\section con_pwd Change the admin's password
+This is the first thing you should do. Your node comes with a
+pre-configured user called \c admin, and this user's password is
+'baltrad'. You have to log on using the web-based user interface and change
+it to something only you know. 
+
+Go to the "Settings" --> "User accounts" --> "Edit" page. There you'll see
+the \c admin user and a link to the right called "Change" under the heading
+"Password". Use a safe password, and store it in a safe place that you
+remember.
+
+\section con_ns Configure your node settings
+Go to "Settings" --> "Node settings". This is where you should identify
+your node properly. If you didn't build your node with \c --nodename, then
+your default node name will be your computer's \c hostname. Your node
+should be type "Primary".
+
+The "node address" is very important. If the URI contains "localhost" or
+127.0.0.1, then it is vital that you change this to the IP number or
+network name that external computers can use to communicate with
+it. Failing to do this will cause data exchange errors.
+
+The pure text fields accept non-ASCII characters like &aring;, &aelig;, and
+&oslash;. Add the correct details of your organization. There's no reason
+to change the work directory. The e-mail address is not used currently, but
+you should enter a valid one anyway.
+
+\section con_os Add ODIM source definitions 
+The node comes with a set of European weather radar identifiers. These are
+found in an XML file in the RAVE package, so you should have installed or
+at least downloaded RAVE. If you are interested in adding more radars to
+this file, you are welcome to do so and submit them to us!
+
+Your database must be configured with this information, and the procedure
+is manual. On the command-line, taking care that your paths and the URI to
+your database are correct, run:
+\verbatim
+/opt/baltrad/baltrad-db/bin/baltrad-bdb-client \
+  import_sources \
+  --url=http://localhost:8090 \
+  /opt/baltrad/rave/config/odim_source.xml
+\endverbatim
+This will take a few seconds, and it won't tell you anything if all goes
+well.
+
+\section con_rad Add a radar or several
+You only need to do this with your own radars. It might be relevant for
+radars operated by other organizations too if you plan on forwarding their
+data to other nodes, but we will only deal with your data here for the sake
+of simplicity.
+
+Go to the "Settings" --> "Radars" page and "Add" a new radar. The only
+information you need is the radar's name and its WMO number. The name is
+easy: don't use a crypticly coded name, use the name of the place that
+people refer to it as, e.g. "Arlanda". That's a lot easier for a human
+being to remember than "02451"...
+
+The WMO "number" is a different story. It should be a combination of five
+(5) digits, where the first two are the "block" number and the last three
+are the "station number". So, even if your block is only one digit, it
+should be padded with a zero, e.g. Sweden is "02". If your radar doesn't
+have a WMO number, just use "00000".
+
+\section con_ds Add one or several data sources
+We use "data sources" in BALTRAD for identifying data that are available
+for exchange. You associate a data source with different types of data,
+e.g. a polar scan or volume, and then you can expose them selectively to
+other nodes via their peer users that connect to your node. We'll deal with
+the peer users later.
+
+Adding a data source takes a few steps. Go to "Settings" --> "User
+accounts" --> "Add". We'll use the Swedish radar at Stockholm-Arlanda
+airport as an example. Start by adding a source name and description.
+\image html data_source_name.png
+Then continue by associating the radar you just configured with it. Note
+that you have to select a radar from the drop-down list and then press the
+green "+" button for your choice to be validated. This technique is used on
+subsequent pages. You can add several radars, and you can remove the last
+one by pressing the "-" button.
+\image html data_source_radar.png
+After that, specify what type of data from this radar are relevant for
+exchange. If your radar sends you data one scan at a time, then select
+"SCAN". If the radar sends a complete polar volume all at once, then select
+"PVOL". Don't worry about the other menu items for now.
+\image html data_source_object.png
+Then you link users to this data source. Normally, you would use "peer"
+users (who we'll discuss later in \ref subscribe), but you can start by
+just linking the \c admin for lack of any other.
+\image html data_source_user.png
+Finally, you're presented with a summary of this data source configuration,
+which you can confirm by pressing "Save".
+\image html data_source_summary.png
+Editing data sources is done with the same procedure.
+
+You can combine several radars into one data source. Likewise, you can
+combine several types of data in a single data source. A \b warning, however,
+that it's unwise to combine polar scans and polar volumes in the same data
+source. Normally, you will be required to create a process where polar
+volumes are created with data from radars that send you data scan by
+scan. If another node is subscribing to both types of polar data from the
+same data source, then it means they'll receive the same data twice.
+
+\section con_lr Keeping the system log clean
+You should configure your system log so that it doesn't overflow with
+messages. This is done in "Settings" --> "System messages" --> "Configure".
+\image html logs_conf.png
+
+\section con_dr Keeping the delivery registry clean 
+You should configure your delivery registry so that it doesn't overflow with
+messages. This registry contains all information on successful and failed
+data transfers. Configuring the registry's size is done in "Settings" -->
+"Delivery registry" --> "Configure". 
+\image html dr_conf.png
+
+\section con_dat Getting your own data into your node
+In a later chapter, we'll get into how two nodes can exchange data through
+subscriptions, but you have to get your own data into your node first. We
+offer you a "back door" whereby data are added using a secure \a injection
+mechanism.
+
+But before you inject your data, they must be converted to the ODIM_H5 file
+format. There are several good converters available from within the
+community and from manufacturers. Ask around if the anyone has already
+succeeded in converting from the format that your radar uses; chances are
+good that someone has something you can use.
+
+We will assume that you are going to inject data from the same machine, in
+other words data are on the same machine as the BALTRAD node that will
+receive them. We offer you two injectors for this:
+
+\li The \b OdimH5 package. This is a stand-alone Java application that
+both converts from the Rainbow 5 format, and also injects ODIM_H5
+files. The convertion process is optional. You can use OdimH5 on the
+command line to process individual files, or you can use it as a daemon to
+monitor an input directory and process the files that are put there. Please see
+the OdimH5 documentation on how to install, configure, and use it.
+
+\li The \b n2b injector in the RAVE package. You'll find it in RAVE's 'bin'
+directory. Note that you don't need your node's whole software
+installation, just the RAVE package itself. Run
+\verbatim
+$ n2b --help
+\endverbatim
+to see what options you have.
+
+Both injectors work from remote computers, ie. not the same machine as the
+one running your BALTRAD node. If this is how you want to do it, then you
+have to ensure that the injector you choose is propery configured when it
+comes to communication security, which is covered in \ref secure.
+
+\section con_clean Prevent your disks from filling up
+A classic problem that causes systems to stop working is that the
+computer's disks become full. In BALTRAD, its your database (BDB subsystem)
+that stores your data. It's very easy to configure it to a comfortable size
+that suits your needs. This is done by creating a new route in "Processing"
+--> "Routes" --> "Create DB trim age", e.g.
+\image html bdb_age.png
+Note that when the route has been defined, it must also be scheduled. You
+don't need to do this scheduling for normal data processing tasks, just the
+"Create DB trim age" and "Create DB trim count" routes.
+\image html bdb_age_sched.png
+
+ */

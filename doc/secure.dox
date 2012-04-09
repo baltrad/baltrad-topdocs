@@ -1,0 +1,198 @@
+/** \page secure Security in BALTRAD
+\date January 2012
+\version 1.0
+
+The BALTRAD system communicates with other nodes securely, and the
+web-based user interface is also secure, even though the URI prefix is
+"http" instead of "https". When the node is installed, security mechanisms
+are established that are fundamental for maintaining safe operations. This
+chapter is devited to explaining how it works and what steps you need to
+take.
+
+\li \ref sec_how
+\li \ref sec_in
+\li \ref sec_nk
+\li \ref sec_ex
+\li \ref sec_usr
+\li \ref sec_peer
+
+\section sec_how How security works in BALTRAD
+We use private and public Digital Signature Algorithm (DSA) keys to ensure
+secure communications. These keys are generated and managed by Google's
+<a href="http://www.keyczar.org" target="_blank">keyCzar</a> package, which
+suits us well because it has both Java and Python APIs that work almost
+identically.
+
+The messages that are exchanged between nodes are multipart messages (MIME)
+including a timestamp and a signature that are used to sign each
+message. The signing of the message is the mechanism that is used to verify
+that the each incoming message is sent from a trusted peer. Each node must
+have its own private and public keys. The public key is made available to
+other nodes, where it is used to validate inbound messages from its
+node of origin. Logging on to another node is not possible until the two
+nodes have exchanged public keys. Subscribing to data is not allowed until
+public keys have been exchanged and peer users have connected to the other
+node manually for the first time. This mechanism is designed to prevent
+a node from being spammed with messages from unknown sources.
+
+There are different user types in the system, each with its own
+privilages. These are presented below in \ref sec_usr.
+
+Encryption is currently not implemented in BALTRAD, although the signatures
+are encrypted in all messages. All passwords are also encrypted when you
+log into a BALTRAD node using the web-based interface. While some countries
+have officially banned the use of encryption, we will be addressing
+encryption in the BALTRAD+ project as an option for those who want or need
+it.
+
+\section sec_in Default key configuration
+When the BALTRAD node is installed, a so-called \a keystore is created
+automatically in \c $prefix/etc/bltnode-keys. This is a directory
+containing sub-directories, one for each set of keys. The location of the
+keystore can be different when building your node, by using the <tt>
+--keystore=\<path\></tt> argument with \c setup. The name of your node's
+keystore is given by your \c nodename, which you also determined when you
+built the system, either by letting it be the same as your \c hostname
+(default) or by setting it with the <tt>--nodename=\<name\></tt> argument.
+
+If you have installed the RAVE package for data processing on the same
+machine as the node, it will be configured automatically to use the same
+public key as the one generated for the node itself. The same holds true if
+you use the n2b data injector because it comes as part of RAVE. Otherwise,
+you have to generate new keys manually. See the next section.
+
+\section sec_nk Generating new keys
+Should you be in need of a new set of private and public keys, then you
+should follow the following instructions. The reason for needing new keys
+can be any of:
+\li Injecting data into a node from a remote computer, so the injector
+needs to be able to authenticate with the node,
+\li RAVE's data processing server is located on a remote machine, so it
+needs to be able to authenticate with the node when it injects the products
+it generates.
+\li Rotate keys as part of regular security procedures to the node. This
+should be done if such procedures are a forced on you by policy and cannot be
+avoided, or if you have reason to believe that your public key has come
+into the wrong hands elsewhere and is being abused, and therefore needs to
+be changed.
+
+Note that, if your data injector and RAVE server are both located on the
+same remote machine, you can use the same keys to authenticate with the
+node.
+
+The key generation process is given in the following steps, using keyCzar's
+Python package. Using the Java package is pretty much the same.
+
+1. Create a "store" for your key:
+\verbatim
+$ python -m keyczar.keyczart create \
+    --location=/path/to/your/key \
+    --purpose=sign \
+    --name=keyname \
+    --asymmetric=dsa
+\endverbatim
+2. Then generate the key itself:
+\verbatim
+$ python -m keyczar.keyczart addkey \
+    --location=/path/to/your/key \
+    --status=primary
+\endverbatim
+3. Then export the public key:
+\verbatim
+$ python -m keyczar.keyczart pubkey \
+    --location=/path/to/your/key \
+    --destination=/path/to/your/key.pub
+\endverbatim
+The public key should then be placed where the BALTRAD node was installed,
+the default place being <tt>$prefix/etc/bltnode-keys/$DEX_NODENAME.pub</tt>. 
+
+Remember to keep your private key (at /path/to/your/key) secret and safe!
+
+\section sec_ex Exchanging keys with other nodes
+In order to connect to another node, and subsequently subscribe to data
+from it, you must exchange public keys with that node. The process is
+manual for the time being, not automatic, although we are working on an
+automated procedure.
+
+Assuming your keystore is located in the directory
+<tt>$prefix/etc/bltnode-keys</tt> directory, your public key is found
+in the subdirectory called \c $DEX_NODENAME.pub. That means if your node
+name is \c se.smhi.balthazar, then your public key will be found in the
+directory called \c se.smhi.balthazar.pub. There are two inside
+this subdirectory, one called \c "1" and the other called \c "meta". These
+two files are your public key.
+
+It is up to you to figure out the best way to communicate the contents of
+these two files to the node with which you want to connect. Do this in
+agreement with the administrator of the other node. Practices and policies
+will be different in different places, but the two most realistic methods
+are e-mail and the use of third-party certificate authorities.
+
+If you decide transmit your public key electronically, which is a
+reasonable assumption, you can decide to pack it, e.g.
+\verbatim
+[bltnode-keys]$ tar cvzf se.smhi.balthazar.tgz se.smhi.balthazar.pub 
+\endverbatim
+Then transmit this file to the remote node's administrator. Upon safe
+reception, it is unpacked in the equivalent location:
+\verbatim
+[bltnode-keys]$ tar xvzf se.smhi.balthazar.tgz se.smhi.balthazar.pub
+\endverbatim
+You are now able to connect to the other node.
+
+\section sec_usr Users types, their roles and privileges
+This section is not related to those above. There are different types of
+users in BALTRAD. You can have several different users of the same type,
+and each type of user has a different role that is defined by access rights
+to different functionalities.
+\htmlonly
+<table border="1">
+<tr><th>Type</th> <th>Description</th></tr>
+<tr><td>admin</td> <td>Administrator with full access to system controls.</td></tr>
+<tr><td>operator</td> <td>Allowed to browse data, display data previews,
+inspect system log, connect to peer nodes, subscribe to data, update or
+modify existing exchange status by starting or canceling subscriptions,
+inspect data delivery registry. May not alter system configuration in
+"Settings".</td></tr>
+<tr><td>user</td> <td>Grants access to basic system features only. This
+includes data browsing, data preview, and system log inspection.</td></tr>
+<tr><td>peer</td> <td>This role is reserved for data exchange only. A peer
+accounts cannot be created locally, it is established automatically upon
+first successful connection from a remote node.</td></tr>
+</table>
+\endhtmlonly
+
+\section sec_peer Connecting to a remote node, and creating a peer user on it
+This is the first step towards being able to exchange data. Once two nodes
+have exchanged public keys (see above), they will be allowed to connect to
+each other for the first time.
+
+In the web-based user interface, go to "Exchange" --> "Connect". In the
+"Define new connection" field, type the complete URI to the remote node,
+e.g. <tt>http://balthazar.smhi.se:8080/BaltradDex/dispatch.htm</tt> and
+then press the "Connect" button.
+
+This authentication-by-connection must have been done by both nodes
+before either of the nodes can subscribe to any data!
+
+You should be greeted by a simple page confirming that you have succeeded
+and that the next step is for the remote admin to enable you to subscribe
+to the data sources on that node:
+\verbatim
+Data source list is empty. Ask remote node's administrator to make data
+sources available for you.
+\endverbatim
+This was described in \ref con_ds. The
+only difference is that the remote node's admin will "Edit" an existing
+data source by adding your peer user to it, if this data source doesn't
+already exist. Remember, \b don't subscribe to anything until both sides
+have connected.
+
+Note that there are no other steps required to create a peer user on the
+remote node. When your node connected to the remote one, this peer user
+was created automatically following successful authentication. It's name on
+the remote node is the same as the name of its DSA keys,
+e.g. \c se.smhi.balthazar. This user will be added to the user list when
+going to the "Settings" --> "User accounts" management page.
+
+ */

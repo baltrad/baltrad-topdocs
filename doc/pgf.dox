@@ -1,0 +1,613 @@
+/** \page pgf Processing data
+\date January 2012
+\version 1.0
+
+Your node should now be receiving data from your own radar(s), and
+exchanging data safely and smoothly with other nodes. This is where you can
+learn more about how these data can now be processed. We will go the
+through the procedure of setting up data processing by using an example
+based on polar scans that arrive to a node individually, they are compiled
+into volumes, optionally quality-controlled, and then a Pseudo-CAPPI is
+generated. The resulting product file will be used to create a graphics
+image for web-based display. We finish by outlining how the BALTRAD toolbox
+can be used on the command line, with scripts, and how you can contribute
+to it.
+
+\li \ref pgf_bak
+\li \ref pgf_how
+\li \ref pgf_prep
+\li \ref pgf_qm
+\li \ref pgf_vol
+\li \ref pgf_cp
+\li \ref pgf_comp
+\li \ref pgf_gm
+\li \ref pgf_cl
+\li \ref pgf_scr
+\li \ref pgf_io
+\li \ref pgf_ho
+
+\section pgf_bak Background
+Before we get into the details, we should probably touch on some of the
+principles that are applied when it comes to data processing in our
+system. In principle, data processing is an \e optional part of the overall
+node concept that have implemented. Take a look at the item in the FAQ
+addressing \ref faq_interact. You don't have to install your node with the
+packages containing data processing functionality. In that case, you won't
+have access to a lot of useful stuff, including some routines
+e.g. for \ref sec_nk and one of the data injectors that you can use for \ref
+con_dat.
+
+The concept that we've applied to achieve this separation between the core
+system and data processing is that data processing takes place in a
+separate system that communicates with the core system over the wire. This
+means that the data processing can take place on another machine and still
+work together with your node. The only requirement in this case is that a
+common disk volume is shared. This can be done using a SAN or perhaps an
+NFS volume if it doesn't suffer from poor bandwidth. Revisit \ref req for
+more on this.
+
+We should also clarify some of the terms used here. We have two <em>Product
+Generation Frameworks</em> (PGF) in BALTRAD, one written in Java and the other
+written in Python. The former is currently unused, as there has been no
+demand for it, but it is available anyway. This documentation will
+therefore focus on how to manage and use the Python PGF. This is the \e RAVE
+package, and RAVE combined with the other packages that work together with
+it are collectively referred to as the <em>BALTRAD Toolbox</em>.
+
+A note on single-site vs. composite products. In the BALTRAD toolbox, there
+is currently no difference. All Cartesian products are composites, even if
+they contain data from just one radar. In all cases, polar data are
+nagivated directly to the output area with no intermediate steps or
+projections. We'll see how this works in practice later.
+
+We distinguish between <em>what kind of job we want a PGF to run</em>, and
+<em>how we want the PGF to run it</em>. In this sense, we will define
+product generation tasks separately from different ways of performing
+quality control. This may seem a little confusing now, but we hope
+everything will become clear once you've read this chapter.
+
+Another little conceptutal detail before we move on.
+
+\section pgf_how Interaction between the node and PGF
+
+This is where the concept of \b Adapters and \b Routes is most clearly
+applied. In order to communicate with a PGF, the node uses an XML-RPC
+adapter. The node takes care of all scheduling and triggering of
+processes. When the criteria are fulfilled for triggering a job, an XML-RPC
+message is sent to the PGF, telling it which algoritm to run, with which
+arguments, and with which input data. When the PGF has run the job, the
+resulting ODIM_H5 file is injected back into the node. Alternatively,
+some types of jobs, e.g. generating PNG images for Google Maps, don't
+inject data to the node because there's no need to.
+
+\section pgf_prep Preparation
+You can process any data unless you have have some. By now, you should have
+followed the instructions on how to \ref con_rad.
+
+Similarly, you will need to select input data based on the ODIM source \b
+node identifier, so you should \ref con_os to your node if you haven't
+already.
+
+\section pgf_ad Add a PGF adapter to your node
+The first step in the data processing chain is to define an adapter so that
+the node knows where to find your PGF. In the web-based user interface, go
+to "Processing" --> "Adaptors" and press "Create". Assuming a default
+configuration, define a RAVE adapter like this:
+\image html pgf_adapter.png
+You can define several such adapters, even distributed among different
+machines, and you can then send different types of jobs to each. If you try
+this, ensure that these machines all share a common file system with your
+node as was mentioned in \ref pgf_bak.
+
+\section pgf_qm Add a quality control
+This may seem a little odd, but the modular nature of our system implies
+that it cannot be taken for granted that all ways of processing data have
+been installed when you built your node. Different packages exist for
+processing data in different ways. Two such packages are \b bRopo, a package
+that identifies and removes non-precipitation echoes ("anomalies") in polar
+data, and \b beamb, a packages that determines beam blockage caused by
+topography and corrects for it. In the case of bRopo, the original code
+base is large enough to justify managing it as a separate package. In the
+case of beamb, there are large digital elevation models that are included
+and that the algorithms rely on, so this is another justification for
+separate packaging.
+
+Define a quality control by going to "Processing" --> "Quality controls"
+and pressing the "Create" button, e.g. for the bRopo package:
+\image html pgf_cqc.png
+This is a little tricker than it first seems, because the PGF must
+recognize the "Name" that you have entered. Currently the only such names
+are "ropo" and "beamb".
+
+\section pgf_vol Generating a volume from polar scans
+This is where we actually start doing something with data. The \b Route
+concept can also be referred to as a \e rule, where you define the criteria
+that need to be satisfied to start a data processing job. A volume route is
+not as trivial as it seems at face value, because it must be easy to
+configure but also contain enough intelligence to deal with scan strategies
+that change without notice, and scans that don't arrive for whatever
+reason.
+
+Our volume route is \e adaptive which makes it pretty robust. The only
+details you need to provide that are related to the scan strategy
+itself are the lowest and highest elevation angles, and the repeat
+cycle. The route will then figure for itself out the other details. This
+means that it won't manage very well in cases where the scan strategy
+changes every cycle. In such cases, it is better to define separate routes
+for each type of scan strategy.
+
+Here is an example of a volume route used with Swedish data.
+\image html pgf_vol.png
+As soon as the bottom scan is received, the rule will activate and will
+monitor inbound scans from any of the selected sources. 
+As soon as the top scan is received for a given source, the job will
+run. The timeout of 900 seconds (15 min) is very generous and can be
+reduced. If the top scan hasn't been received before the timeout is
+reached, then the volume will be created with those scans that have been
+received.
+
+Quality control can be combined in the volume route, by selecting them when
+configuring the route. 
+
+Note that the routes never buffer data in memory, they only keep track of
+the whereabouts of the input data files through the metadata that was mined
+from them when the files arrived to the node.
+
+When the route's criteria have been fulfilled, an XML-RPC message to the
+PGF will be triggered, and the PGF will compile the volume from the input
+scans, quality controlling them if this has been selected, and then inject
+the resulting volume into the node.
+
+\section pgf_cp Defining geographic projections and Cartesian areas
+BALTRAD software uses the 
+<a href="http://http://trac.osgeo.org/proj/" target="_blank">PROJ.4</a>
+projections library to navigate data. In the toolbox, there are tools
+available to help you do this. Normally, we would refer directly to the
+PGF's own documentation for the details, but this is a topic that is so
+fundamental to data processing that it's justified to cover it here.
+
+\subsection pgf_cp_proj Defining a geographic projection
+This can be done on the command line using the \c projection_registry
+tool. The procedure is a rather transparant interface to PROJ.4, so you are
+referred to the PROJ.4 documentation regarding how it works.
+
+The following example defines the projection used by Google Maps and adds
+this projection to the toolbox's projections registry:
+\verbatim
+$ projection_registry --add --identifier=gmaps \
+--description="Google Maps" \
+--definition="+proj=merc +lat_ts=0 +lon_0=0 +k=1.0 +R=6378137.0 +datum=WGS84 +no_defs"
+\endverbatim
+You can then verify that this definition has been added to the registry by
+running
+\verbatim
+$ projection_registry --list
+\endverbatim
+and you should see the following entry:
+\verbatim
+gmaps -	Google Maps
+	+proj=merc +lat_ts=0 +lon_0=0 +k=1.0 +R=6378137.0 +datum=WGS84 +no_defs
+\endverbatim
+Now that you have this projection, you can define areas using it.
+
+\subsection pgf_cp_area Defining a Cartesian area
+A projection is a two-dimensional representation of the Earth's shape. But
+we also need to know <em>which part</em> of the Earth we want to work with,
+and this is referred to as an \b area.
+
+Defining an area and adding it to the toolbox's area registry is done using
+the \c area_registry command. If you already know your area definition and
+how it related to your projection definition, then just just use the
+command.
+
+You can also use the tool to help you define an area that is based
+on the characteristics of your radar data, either a single radar or several
+to define a composite area, for example. In the following example, we use a
+polar volume of data from the Swedish radar located near Vara, inland from
+Gothenburg. First we determine a matching Cartesian area that uses the
+Google Maps projection we defined above.
+
+But before we do that, we must know the \e real resolution we want on the
+Earth's surface. This is determined through knowledge of the <em>latitude of
+true scale</em> (lat_ts, in radians), as
+\verbatim
+projection_resolution(m) = ground_resolution(m) x 1 / cos(lat_ts)
+\endverbatim
+Our radar is close to 60 degrees north, so let's use this latitude of true
+scale for the same of simplicity. If we want a real resolution on the
+ground of one kilometer, the projection's resolution will be two
+kilometers. Convenient. This is used when defining the Cartesian area: 
+\verbatim
+$ area_registry --make --identifier=sevar_gmaps \
+--description="Google Maps area for Vara" --proj_id=gmaps --files=sevar.h5 \
+--xscale=2000.0 --yscale=2000.0
+\endverbatim
+This should print out the following:
+\verbatim
+__PROVISIONAL__ -	Area using projection with identifier "gmaps"
+	projection identifier = gmaps
+	extent = 967050.466007, 7575120.949412, 1887050.466007, 8495120.949412
+	xsize = 460, ysize = 460
+	xscale = 2000.000000, yscale = 2000.000000
+	South-west corner lon/lat: 8.687162, 56.083825
+	North-west corner lon/lat: 8.687162, 60.434520
+	North-east corner lon/lat: 16.969629, 60.434520
+	South-east corner lon/lat: 16.969629, 56.083825
+Run again with -a -i <identifier> -d <"description"> to add this area to the registry.
+\endverbatim
+Re-running but using the \c --add argument and this output will register
+this area:
+\verbatim
+$ area_registry --add --identifier=sevar_gmaps \
+--description="Google Maps area for Vara" --proj_id=gmaps  \
+--xscale=2000.0 --yscale=2000.0 --xsize=460 --ysize=460 \
+--extent='967050.466007, 7575120.949412, 1887050.466007, 8495120.949412'
+\endverbatim
+Verify by running:
+\verbatim
+$ area_registry --list
+\endverbatim
+and you should see the following entry:
+\verbatim
+sevar_gmaps -	Google Maps area for Vara
+	projection identifier = gmaps
+	extent = 967050.466007, 7575120.949412, 1887050.466007, 8495120.949412
+	xsize = 460, ysize = 460
+	xscale = 2000.000000, yscale = 2000.000000
+	South-west corner lon/lat: 8.687162, 56.083825
+	North-west corner lon/lat: 8.687162, 60.434520
+	North-east corner lon/lat: 16.969629, 60.434520
+	South-east corner lon/lat: 16.969629, 56.083825
+\endverbatim
+The corner coordinates will come in handy later, so keep them in mind.
+
+Note that if we had used \c area_registry with several files as input, then
+the resulting area definition would have been a composite area including
+all radars' coverage areas.
+
+\section pgf_comp Generating a composite
+We now have all the information we need to generate a Cartesian product for
+our example. This is done through the web-based user interface, by going to
+"Processing" --> "Routes" --> "Create composite".
+\image html pgf_comp.png
+Note that the "Product parameter" is modelled after the same metadata
+attribute in ODIM.
+
+With this example, we have shown how single-site Cartesian products are
+generates as "Composites". This may seem a little counter-intuitive, but it
+works. Everything's a composite ...
+
+\section pgf_gm Displaying Cartesian products using the Google Maps Plugin
+We now have our node generating products in real time, so we might be
+interested in looking at them. BALTRAD doesn't contain its own
+visualizer. This is because different organizations have different
+visualization tools and strict policies governing them. So we decided we
+wanted a web-based display that would keep things simple. And it became
+easy to take a closer look at Google Maps.
+
+If you built and installed your node with the \c --with-rave-gmap argument,
+then you already have the package installed. There are a few things
+you need to do manually before this service will work for you.
+
+\subsection pgf_gm_ap Configuring your web server
+Make sure your web server knows about this plugin. We have integrated
+against an Apache server, so the instruction is valid for it. At the bottom
+of your server's \c httpd.conf file, add the following entry. This is
+assuming that you've checked with your system administrator what want to do
+won't conflict with anything they're already doing. We also assume that the
+Google Maps Plugin has been installed in the default location.
+\verbatim
+<VirtualHost *:80>
+  DocumentRoot /opt/baltrad/rave_gmap/web
+  ServerName balthazar.smhi.se
+</VirtualHost>
+\endverbatim
+After this, restart your Apache server:
+\verbatim
+root# service httpd restart
+\endverbatim
+
+\subsection pgf_gm_route Configuring a route in your node
+Define a route in the node for generating images for Google Maps. This is
+currently done by Groovy scripting, and there's a ready-made script
+for you for this purpose that comes along with the node installer. In the
+\c packages directory, you'll find the \c beast package and a subdirectory
+called \c examples. There you will find an example script named \c
+GenerateGmapPng.groovy. Start by using the web-based user interface to your
+node, and go to "Processing" --> "Routes" --> "Create script". Paste the
+Groovy script into the "Script" field and make sure the AREAS and PATH
+declarations are correct:
+\image html pgf_gmscript.png
+As soon as you have saved this route, the plugin will generate a PNG image
+for Google Maps each time an input file for it is generated.
+
+\subsection pgf_gm_gm Configuring the plugin itself
+The final step is for you to configure the plugin itself, so that it
+contains a selectable product menu item that matches the product you're
+generating. In the <tt>$prefix/rave_gmap/web</tt> directory, there is a
+file named \c products.js that comes with some area definitions we have
+used while developing the system. They can be replaced with your new one,
+or your new one can be added. Continuing with our example from Vara, a
+corresponding entry for it makes use of the corner coordinates we
+determined earlier in \ref pgf_cp_area and the radar's location:
+\verbatim
+//Product sevar_gmaps, Vara 1 km
+radar_products['sevar_gmaps'] = new RadarProduct;
+radar_products['sevar_gmaps'].description = 'Vara - Sweden';
+radar_products['sevar_gmaps'].lon = 12.826;
+radar_products['sevar_gmaps'].lat = 58.256;
+radar_products['sevar_gmaps'].zoom = 5;
+radar_products['sevar_gmaps'].nelon = 16.969629;
+radar_products['sevar_gmaps'].nelat = 60.434520;
+radar_products['sevar_gmaps'].swlon = 8.687162;
+radar_products['sevar_gmaps'].swlat = 56.083825;
+radar_option_list[1] = 'sevar_gmaps';
+\endverbatim
+If you want to make this product the default that's displayed, make it
+first on the list, as \c radar_option_list[0].
+Save the file and then use your browser to access Google Maps from your
+machine. Voil&agrave;!
+\image html sevar_gmaps.png
+
+Note that there are currently no routines for determining the maximum size
+of the disk space or age of the files used for storing PNG images. It's up
+to you to deal with this. We'll probably come up with a good solution in
+BALTRAD+.
+
+If you are interested in displaying images similarly using Web Map
+Services, check out the BALTRAD WMS package.
+
+\section pgf_cl Processing data on the command line
+Some of the tools in the toolbox are available on the command line, which
+is useful for off-line work. To ensure that you have your environment set
+correctly before using them, make sure you have sourced the \c
+$prefix/etc/bltnode.rc file. Then, you can check out the \c bin directories
+of the various packages you have installed and see what's available. For
+example, you might be interested in determining whether a polar volume of
+data contains a sun signature.
+\verbatim
+$ scansun polar_volume.h5
+\endverbatim
+An example from a Dutch radar should give e.g. 
+\verbatim
+#Date    Time   Elevatn Azimuth ElevSun AzimSun dBmMHzSun dBmStdd RelevSun Source
+20110111 075022    0.30  126.50   -0.78  126.84   -113.31  0.6722    -0.19 RAD:NL51,NOD:nldhl
+\endverbatim
+This tool is prepared for monitoring sun "hits" assuming your input data
+are in ODIM_H5 version 2.1 with the required metadata.
+
+A more advanced tool is in the bRopo package for detection and removal of
+non-precipitation echoes ("anomalies"). A "lazy" use of it, where all input
+arguments and values are looked up from a file containing them is:
+\verbatim
+$ ropo -i input_volume.h5 -o output_volume.h5 --lookup=True
+\endverbatim
+An example result is displayed in \ref faq_ia. Run 
+\verbatim
+$ ropo --help
+\endverbatim
+to get a full listing of options.
+
+\section pgf_scr Data processing scripts 
+Scripting is an effective development method. Not only does it allow rapid
+prototyping, it also reduces the bottlenecks in transforming a lab result
+to an operational implementation. There are also other bottlenecks that are
+addressed here, related to performance. By reading input data \e once, and
+then running all data processing on those data before writing the result
+\e once, we can speed things up remarkably. We do this with Python scripts,
+but they are just a thin layer on top of the underlying C which is the real
+engine.
+
+The following example script does almost the same thing as the real-time
+routines we set up earlier. We use the same data as earlier too.
+\verbatim
+#!/usr/bin/env python
+## Example of using a script to process data and chain algorithms in memory
+
+import sys
+import _raveio
+import _transform
+import ropo_realtime
+import rave_composite
+import rave_ql
+
+
+def process(input_file, output_file):
+
+    # Read ODIM file and get its payload
+    io_container = _raveio.open(input_file)
+    polar_volume = io_container.object
+
+    # Detect and remove non-precipitation echoes. This generator is the "lazy"
+    # alternative, equivalent of using --lookup=True on the command line.
+    cleaned_volume = ropo_realtime.generate(polar_volume)
+
+    # Generate single-site 1 km DBZH Pseudo-CAPPI "composite"
+    composite = rave_composite.generate([cleaned_volume], area="sevar_gmaps",
+                                        quantity="DBZH",
+                                        product="PCAPPI",
+                                        prodpar=1000.0,
+                                        method="NEAREST_RADAR")
+
+    # Perform rudimentary (1 pixel) gap-filling on the composite
+    t = _transform.new()
+    gap_filled = t.fillGap(composite)
+    composite.setData(gap_filled.getData())
+
+    # Display a quick-look window of the result
+    rave_ql.ql(composite.getData())
+
+    # Recycle the I/O container and write output ODIM_H5 file
+    io_container.object = composite
+    io_container.filename = output_file
+    io_container.save()
+
+
+if __name__ == "__main__":
+    # No validation of arguments
+    process(sys.argv[1], sys.argv[2])
+\endverbatim
+The quick-look window looks like this. It uses a different color palette
+than the Google Maps image above.
+
+This also illustrates the value of using common routines to read and write
+data, because chaining algorithms from different contributors in memory
+like this is impossible otherwise.
+
+\image html pgf_comp_ql.png
+
+\section pgf_io Contributing your own processing functionality
+We are part of a community that benefits through cooperation. We would love
+to see this community grow, and one way of doing this is to get involved
+and contribute a processing algorithm. In doing so, there's a golden rule
+that we want to note: separation of file I/O and the data
+processing. This means that the data processing functionality should not be
+mixed with the functionality used to read and write the data to/from
+disk. Keeping these things separate makes life easier because it makes it
+easy to use the same code with different file formats. Schematically, this
+is the concept:
+\li Read ODIM_H5 data using RAVE at the C level
+\li Map RAVE's C objects holding ODIM_H5 data and metadata to your data structures
+\li Run your algorithm
+\li Map your return data structures to RAVE's corresponding C objects
+\li Write ODIM_H5 data using RAVE at the C level
+
+When you contribute code that's been structured this way, it will integrate
+nicely into the toolbox where we all can benefit from it.
+
+\section pgf_ho An example contribution in C: "hello ODIM"
+This is going to be an overly simple but working example, for the sake of
+clarity. Please refer to our C APIs for the details. This is also the
+natural place to go when integrating existing code or developing new
+algorithms from scratch.
+
+Let's say someone has a little piece of existing code designed to query a polar
+scan of data and tell us its characteristics.
+
+They have the following external data structure:
+\verbatim
+/* Simplified structure */
+struct scan {
+   double elev;           /* Elevation of scan in deg. */
+   long nazim;            /* Number of azimuth rays in scan. */
+   long nrang;            /* Number of range bins per ray. */
+   double rscale;         /* Size of range bins in scan in m. */
+   unsigned char *data;   /* Data buffer */
+   size_t bytes;          /* Data buffer size */
+};
+typedef struct scan SCAN;
+\endverbatim
+And they have the following function that does something really simple:
+\verbatim
+int query(SCAN *myscan) {
+   int bytes_per_bin = 0;
+   printf("This scan's elevation angle is %2.1f degrees\n", myscan->elev);   
+   printf("This scan has %ld rays\n", myscan->nazim);
+   printf("This scan has %ld bins per ray\n", myscan->nrang);
+   printf("The bin length is %3.1f m\n", myscan->rscale);
+   printf("The data buffer contains %ld bytes\n", myscan->bytes);
+   bytes_per_bin = (int)((float)myscan->bytes / (float)(myscan->nazim * myscan->nrang));
+   printf("%d byte(s) per bin\n", bytes_per_bin);
+
+   return 0;
+}
+\endverbatim
+Our job is to figure out how to use the \c query function with the BALTRAD
+toolbox. We need to map our ODIM-based objects to the \c SCAN structure. We
+do this through the toolbox API for managing polar scans and the polar scan
+parameters that they can contain. We write the following mapping function:
+\verbatim
+int map_ODIM_to_SCAN(PolarScan_t *odim_scan, SCAN *my_scan) {
+   RaveDataType type = RaveDataType_UNDEFINED;
+   PolarScanParam_t *dbzh = NULL;
+   size_t bins = 0;
+   size_t bytes = 0;
+
+   /* RAVE represents angles in radians, use PROJ.4 to convert back to degrees */
+   my_scan->elev = PolarScan_getElangle(odim_scan) * RAD_TO_DEG;
+
+   my_scan->nazim = PolarScan_getNrays(odim_scan);
+   my_scan->nrang = PolarScan_getNbins(odim_scan);
+   my_scan->rscale = PolarScan_getRscale(odim_scan);
+   bins = my_scan->nazim * my_scan->nrang;
+
+   /* ODIM can contain several parameters for each scan. Get DBZH. */
+   dbzh = PolarScan_getParameter(odim_scan, "DBZH");
+   type = PolarScanParam_getDataType(dbzh);
+
+   /* Based on data type, defined in rave_types.h, allocate memory */
+   if (type == RaveDataType_UCHAR) {
+      bytes = bins * sizeof(unsigned char);
+   } else if (type == RaveDataType_DOUBLE) {
+      bytes = bins * sizeof(double);
+   } /* can also be done for CHAR, SHORT, INT, LONG, and FLOAT */
+   my_scan->bytes = bytes;
+   my_scan->data = RAVE_MALLOC(bytes);
+   memset(my_scan->data, 0, bytes);
+
+   memcpy(my_scan->data, PolarScanParam_getData(dbzh), bytes);
+   RAVE_OBJECT_RELEASE(dbzh);
+
+   /* Normally, we want to include enough checks to give different return 
+      codes if something goes wrong, but not in this simple case. */
+   return 0;
+}
+\endverbatim
+We have succeeded when we have managed to separate file I/O from the job of
+processing the data. And the following \c main program does just that.
+\verbatim
+int main(int argc,char *argv[]) {
+   SCAN myscan;
+   PolarScan_t *scan=NULL;
+   int retcode = -1;
+
+   RaveIO_t* raveio = RaveIO_open(argv[1]);  /* I/O container, open the file */
+
+   /* Access the file's payload, checking that it's the anticipated type */
+   if (RaveIO_getObjectType(raveio) == Rave_ObjectType_SCAN) {
+      scan = (PolarScan_t*)RaveIO_getObject(raveio);
+   }else{
+      printf("Input file is not a polar scan. Giving up ...\n");
+      RAVE_OBJECT_RELEASE(scan);
+      return 1;
+   }
+
+   /* Map ODIM information to contributed structure */
+   if (map_ODIM_to_SCAN(scan, &myscan)) {
+      printf("Failed to map information. Giving up ...\n");
+      RAVE_OBJECT_RELEASE(scan);
+      RAVE_FREE(myscan.data);
+      return 1;
+   }
+
+   /* This is where you add your functionality using your structures,
+      preferably with more control depending on the return code. */
+   retcode = query(&myscan);
+
+   /* Mapping back to ODIM is done similarly, and the I/O container object
+      is used to write ODIM_H5 output files. But we won't do that here. */
+
+   RAVE_OBJECT_RELEASE(scan);
+   RAVE_FREE(myscan.data);
+}
+\endverbatim
+A typical output from Swedish low-level scan would be:
+\verbatim
+This scan's elevation angle is 0.5 degrees
+This scan has 420 rays
+This scan has 120 bins per ray
+The bin length is 2000.0 m
+The data buffer contains 50400 bytes
+1 byte(s) per bin
+\endverbatim
+
+This code leaks no memory thanks to the control we have from the toolbox
+functionality. While C requires a lot of respect when it comes to memory
+management, it is a misconception that C can't be used to create
+higher-level functionality to facilitate one's work, while keeping its best
+feature: raw speed! This is what we have tried to achieve.
+
+Please consult the toolbox APIs for all the details. There are APIs for
+managing most of the regular tasks you would normally think of when wanting
+to process weather radar data.
+ */

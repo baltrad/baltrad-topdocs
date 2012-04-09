@@ -1,0 +1,923 @@
+/** \page faq Frequently Asked Questions
+\date January 2012
+\version 1.0
+
+\htmlonly<hr>\endhtmlonly
+
+CONTENTS
+
+\li \ref faq_what
+\li \ref faq_plus
+\li \ref faq_lgpl
+\li \ref faq_dwld
+\li \ref faq_ipr
+\li \ref faq_comm
+\li \ref faq_do
+\li \ref faq_os
+\li \ref faq_lang
+\li \ref faq_arch
+\li \ref faq_bf
+\li \ref faq_op
+\li \ref faq_adv
+\li \ref faq_ideo
+\li \ref faq_hw
+\li \ref faq_bw
+\li \ref faq_sw
+\li \ref faq_deps
+\li \ref faq_pax
+\li \ref faq_inst
+\li \ref faq_all
+\li \ref faq_nw
+\li \ref faq_ver
+\li \ref faq_first
+\li \ref faq_stop
+\li \ref faq_data
+\li \ref faq_ff
+\li \ref faq_dp
+\li \ref faq_interact
+\li \ref faq_ssl
+\li \ref faq_port
+\li \ref faq_inj
+\li \ref faq_flown
+\li \ref faq_flowx
+\li \ref faq_offline
+\li \ref faq_contrib
+\li \ref faq_viz
+\li \ref faq_ia
+\li \ref faq_plot
+\li \ref faq_ca
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_what What is BALTRAD?
+BALTRAD is many things, and it can be a bit confusing if you use the name
+out of context. Some of our bosses wanted us to have separate names for
+different contexts, and we have tried (but failed so far) to come up with a
+catchy name for the software system. BALTRAD is the following things:
+
+<b>BALTRAD is a project</b> partly funded by the European Union's Baltic
+Sea Region Programme. To our knowledge, it is the first time that European
+money is being used for establishing a weather radar network not as a
+prototype or proof-of-concept, but as a real-time element of regional
+infrastructure. The BALTRAD main-stage project has taken place between
+February 2009 and January 2012.
+
+<b>BALTRAD is a cooperation</b>, a <b><em>partnership</em></b> with the
+following partners: <br>
+Swedish Meteorological and Hydrological Institute <br>
+Finnish Meteorological Institute <br>
+Institute of Meteorology and Water Management, Poland <br>
+Latvian Environmental Geology and Meteorological Centre <br>
+Danish Meteorological Institute <br>
+Republican Hydrometeorological Centre, Belarus <br>
+Finnish Radiation and Nuclear Safety Authority <br>
+Estonian Meteorological and Hydrological Institute
+
+Recently, this partnership has been expanded to include:
+
+German Weather Service <br>
+Lithuanian Hydrometeorological Service under the Ministry of Environment
+<br>
+Nowergian Meteorological Institute <br>
+Department of Civil Engineering, Aalborg University, Denmark <br>
+Aarhus Water A/S, Denmark <br>
+
+<b>BALTRAD is a weather radar network</b>, operating in real-time,
+exchanging data among members of the partnership and generating products
+using a common "toolbox" of data processing algoithms. 
+
+<b>BALTRAD is a software system</b> that contains all the functionality
+required to create and operate an efficient and modern international
+weather radar network. The software has been created by and for the
+partnership, but also for others who are interested in it.
+
+<b>BALTRAD used to be a research radar network</b> created to support the
+<a href="http://www.baltex-research.eu/" target="_blank">Baltic Sea
+Experiment</a>, Europe's contribution to the <a
+href="http://www.gewex.org/" target="_blank">Global Energy and
+Water Cycle Experiment</a>, under the auspices of the <a
+href="http://www.wmo.int/" target="_blank">World Meteorological
+Organization</a>. This old network still exists but is running on autopilot
+with no development.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_plus What is BALTRAD+?
+BALTRAD+ is an extension-stage project stemming from the BALTRAD
+project. The source of funding is the same, whereas the partnership has
+grown to comprise 13 partners in 10 countries. Both geographical and
+thematic scopes have been extended from the main-stage project.
+
+In BALTRAD+ we are including radar data from Germany, Lithuania, and Norway
+into the network, we are transferring our system to X-band in support of
+applications at the municipal scale, we are continuing our focus on
+improving data quality in support of the users, and we are making our
+overall system truly operational. We are also welcoming cooperation with
+other organizations wishing to use our software or joining the cooperation.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_lgpl Is the software free?
+Yes, all software delivered by the project is Open Source, free for anyone
+to use, according to the GNU Lesser General Public License (LGPL). See
+http://www.gnu.org/licenses/ for more information.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_dwld Where can I get it?
+http://git.baltrad.eu/git
+
+http://git.baltrad.eu/manual/releases.html
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_ipr Who owns the Intellectual Property Rights to BALTRAD software?
+The developers. The software is modular, and different developers have
+contributed different parts. Each developer retains the IPR to the code
+they have contributed. This applies to project partners and anyone else who
+wants to get involved.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_comm May BALTRAD software be used commercially?
+Yes, the LGPL license allows commercial use.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_do What does the software system do?
+
+The BALTRAD system allows exchange of weather radar data, data processing,
+and all the things you should need in support of these two main tasks. The
+exchange mechanisms are peer-to-peer; you can control who you want to
+exchange data with, and you can also control what you want to exchange with
+whom.
+
+The data processing functionality is optional. It generates products using
+algorithms that you won't find in other systems. This is for two reasons:
+\li BALTRAD software is targeted to complement existing systems in some
+places,
+\li BALTRAD software tries hard to characterize data quality through the
+whole production chain in a harmonized way, and this has called for a new
+paradigm when it comes to system design and functionality.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_os What operating systems does the software run on?
+We have developed our software for Linux, and to our knowledge BALTRAD
+software is running on Ubuntu, Debian, Red Hat Enterprise, and CentOS. Most
+of our packages run on Mac OS X too, although the complete suite hasn't been
+validated on it yet. Our software may run on proprietary flavors of UNIX,
+but we have conducted no development or testing on any.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_lang What programming languages have been used to develop the system?
+As soon as we started the BALTRAD project, we discovered that the various
+developers scattered throughout the region couldn't agree on a single
+language to use. So we let ourselves be inspired by Google who use three
+languages. The ones we have chosen are C/C++, <a
+href="http://java.com/" target="_blank">Java</a>, and
+<a href="http://python.org/" target="_blank">Python</a>. The amount of C++
+code has dropped recently after we migrated one of our core subsystems to
+Python and Java, so C++ is no longer part of the core system. 
+
+We also use some other scripting tools for specific purposes. For
+example, <a href="http://groovy.codehaus.org/" target="_blank">Groovy
+scripting</a> (based on Java) is used for prototyping well-defined tasks.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_arch Does the system do archiving?
+No, our system is designed primarily for real-time operation, and it
+doesn't make sense to manage huge volumes of data in such an
+environment. We also recognize that different organizations have different
+archiving policies and systems, so we had no problem deciding that we
+didn't want to reinvent this wheel. You can use our system to output data
+in a way that works with your archiving routines.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_bf Who is the software built for?
+Our software is for anyone with a weather radar or weather radar
+data. While our main focus has been on creating a system for real-time
+fully-automated use, you can use parts of our software interactively,
+off-line, in research mode. This is intended to facilitate and
+accelerate the developement process, where new data processing
+functionality can be rapidly prototyped and then integrated into a full
+system context with a minimum of hassle. So, with this in mind, we think
+and hope that our software will appeal to radar owners/operators
+(e.g. national meteorological and hydrological services), and
+developers/researchers in government and university environments.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_op Can I operate my weather radar with BALTRAD software?
+No, running the radar itself is still the owner's responsibility, and there
+is no functionality in our software for connecting to any radar with the
+intention to control it.
+
+However, in the opposite direction, we make it easier for the radar to
+output data in a standardized way so that our system can take care of them
+efficiently.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_adv What are the advantage of using BALTRAD?
+BALTRAD software is portable, open, and transparant. That means that the
+Open Source code lets you understand what it actually does.
+
+The BALTRAD system facilitates data exchange, and our data-processing
+paradigm puts its toolbox in your hands where you can process data locally
+according to your needs. You are not dependent on someone else processing
+data for you elsewhere. Using BALTRAD, you process your data together with
+others' data on equal terms. The quality of the results should be higher
+and more harmonized.
+
+Our system is built to scale to manage continental-size radar networks. It
+will not cause system performance bottlenecks. 
+
+Using BALTRAD software puts you in touch with a community, if you want to
+be part of it. In some places, there are very few people with weather radar
+expertise, so being part of a community can connect to a critical mass of
+knowledge and help move the state-of-the-art forward more rapidly. We all
+benefit from this.
+
+There are no license fees associated with using this software, so such
+costs can, in principle, be saved.
+
+We would like to think that the quality of our data processing algorithms
+is the highest available today. That's quite a claim, but it's also a
+proper level of ambition for a partnership that wants to be on the cutting
+edge.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_ideo Is there a BALTRAD ideology?
+The second part of the question is "... and if so, lay it on me!"
+
+People benefit more from working together than from working alone. There
+are very few people with world-class radar meteorological \a and software
+engineering skills. Often, there are good scientists and good software
+engineers. Working practises and priorities can be quite different, and
+these two groups don't always understand each other. Code that
+achieves excellent scientific results may not be able to run outside the
+computer on which it was developed, and well-implemented code may not give a
+scientifically relevant output. Both groups benefit greatly from working
+more closely together.
+
+The BALTRAD partnership doesn't reinvent wheels unnecessarily. There is a
+certain category of scientist/developer who is categorically against
+anything she hasn't done herself. The results are commonly a reinvented
+wheel that's worse than the existing ones. That's not how we work, because
+reinventing wheels consumes resources unjustifiably. Using well-working
+wheels comes at the cost of trusting and integrating others' code, and this
+manifests itself in the form of third-party dependencies. But doing this is
+an acceptable cost in many cases as it saves time and money without
+compromising quality.
+
+We believe in <a href="http://agilemanifesto.org/principles.html"
+target="_blank">agile</a> software development, without being agile
+purists, because doing so gives us higher-quality results.
+
+We work with <em>marketable skills</em>. We use modern programming
+languages, software tools, and development infrastructure. Not only are we
+convinced that this leads to higher quality results, it also makes the
+development process more creative and fun. A seldom-mentioned yet related issue
+is that using marketable skills makes it easier to replace people should they
+leave, and this applies to both government and the private sector. We want
+to avoid painting ourselves into corners resulting from people who
+disappear, leaving behind them code that has been developed using obsolete
+or scarse skills.
+
+We believe in Open Source principles, because we benefit more through sharing.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_hw What are the minimum hardware requirements?
+There are no requirements on hardware configuration or manufacturer, and we
+have no general preferences either. You can use our software on almost any
+hardware configuration: notebook, desktop, tower, rack, blade, virtual,
+probably also industrial hardware configurations. 
+
+Different partners have different hardware providers and different
+environments, so we have made an effort to create a system that will work
+for everyone.
+
+In terms of performance, the simple answer is "it depends". If you are only
+interested in exchanging data, then entry-level hardware will be
+enough. Your hardware provider will have a more specific definition of
+<em>entry-level</em> but this normally involves a single CPU (dual- or
+quad-core), let's say 4 Gb RAM, 50 Gb of disk space for both the software
+and a few days of data, and an Ethernet adapter connected to a TCP/IP
+network. (Running BALTRAD over WiFi is probably not a good idea.) This
+hardware configuration assumes that it won't be used for anything else.
+
+If you are interested in exchanging and processing large amounts of data,
+then the hardware requirements are still relatively modest. In this case,
+at least one quad-core CPU is needed. More RAM is required, probably at
+least 10 Gb. Disk space depends entirely on how much data you want to keep
+"alive" in the system at any given time, but a few hundred Gb is probably a
+safe bet. Disks in any kind of RAID configuration are highly
+recommended. Redundant Ethernet connections are a good idea.
+
+If you want to create several redundant instances of the system running
+simultaneously, then we can recommend that they share redundant (RAIDed)
+disks from e.g. a Storage Area Network (SAN) that are used to store data.
+
+We do not recommend you install and use our software over networked file
+systems like NFS because they have a tendency to cause significant
+performance bottlenecks.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_bw What are the minimum network bandwidth requirements?
+Network bandwidth needs are notoriously difficult to determine because they
+depends on factors that we have difficulty quantifying. Internet bandwidth
+is pretty inexpensive these days, whereas dedicated network bandwidth
+can be costly (e.g. the RMDCN in Europe). We have no hard requirements,
+only experience. A 64 kbit/s network connection will probably be sufficient
+to support the exchange of data from a few radars, whereas a 10 Mbit/s
+connection might be enough to support the continental scale. There are
+uncertainties in these estimates that need more time to be clarified.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_sw What are the minimum software requirements?
+Any credible 64-bit Linux distribution will have no difficulty accommodating
+BALTRAD software. One of the distributions mentioned above in \ref faq_os
+will definitely work because it works for us already. The software will
+likely work on the 32-bit versions of the same distro, but some of the
+software's unit tests will fail.
+
+The BALTRAD installation notes that accompany the software packages contain
+complete details on requirements. They are usually found in a text file
+called INSTALL.
+
+A critical software requirement when using the system in real time is
+access to a Postgres database server version 8.3.9 or higher, preferably
+8.4+. This database server does not need to be installed on the same server
+as the software is installed on, but it must be accessible. This requirement is
+not needed if you are not going to exchange any data but instead just
+process data off line.
+
+Other required software can be managed with your distro's preferred package
+manager, e.g. RPM, yum, apt-get, etc.
+
+\li An installed Java SDK, currently OpenJDK or SUN JDK (> 1.6)
+\li gcc/g++/gcc-c++ (version 4.1 or higher)
+\li Gnu make (version 3.8 or higher)
+\li autoconf (version 2.59 or higher)
+\li Unicode support (ICU)
+\li bzip2 development libraries
+\li Postgres development libraries
+\li Doxygen
+
+You might also need to install additional packages since one or more modules
+depend on them:
+\li PNG development libraries (used by e.g. bRopo)
+\li FreeType headers and library (used by Google Maps Plugin)
+
+Make sure you install 64-bit versions of these packages where they exist.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_deps What third-party dependencies does the system use?
+As mentioned above, we don't reinvent wheels unnecessarily and we have
+developed our software using C/C++, Java, and Python. We therefore have a
+set of dependencies that is probably larger than you are accustomed
+to. Note, however, that you do not have to download and install these
+yourself. Our installer does it for you. Here is a table containing these
+dependencies.
+\htmlonly
+<table border="1">
+<tr><th>Package</th> <th>Version</th> <th>Description</th></tr>
+<tr><td>Apache ant</td> <td>1.8.0</td> <td>Java build tool</td></tr>
+<tr><td>Apache tomcat</td> <td>6.0.33</td> <td>Web servlet container</td></tr>
+<tr><td>cURL</td> <td>7.19.0</td> <td>Network communications functionality</td></tr>
+<tr><td>expat</td> <td>2.0.1</td> <td>XML library</td></tr>
+<tr><td>HDF5</td> <td>1.8.5-patch1</td> <td>Hierarchical Data Format
+version 5</td></tr>
+<tr><td>HDF-Java</td> <td>2.6.1</td> <td>Java API to HDF5</td></tr>
+<tr><td>HL-HDF</td> <td>0.7</td> <td>SMHI's high-level C and Python APIs to HDF5</td></tr>
+<tr><td>keyCzar</td> <td>0.7b</td> <td>Google's cryptographic toolkit for
+both Java and Python, used to manage private and public keys</td></tr>
+<tr><td>NumPy</td> <td>1.3.0</td> <td>Package for powerful manipulation of
+numerical arrays and scientific computing in Python</td></tr>
+<tr><td>PROJ.4</td> <td>4.7.0</td> <td>Cartographic projections library</td></tr>
+<tr><td>PyASN1</td> <td>0.1.2</td> <td>Library for working with ASN.1-based
+protocols in Python</td></tr>
+<tr><td>PyCrypto</td> <td>2.4.1</td> <td>Python Cryptography Toolkit</td></tr>
+<tr><td>PycURL</td> <td>7.19.0</td> <td>Python interface to cURL</td></tr>
+<tr><td>Python</td> <td>2.6.4</td> <td>Python programming language and interpreter</td></tr>
+<tr><td>Python Imaging Library</td> <td>1.1.7</td> <td>Manipulation of
+generic image objects in Python</td></tr>
+<tr><td>ZLIB</td> <td>1.2.4</td> <td>Compression library</td></tr>
+</table>
+\endhtmlonly
+
+Some of the BALTRAD software packages written in Java have included
+third-party dependencies and are managed by these packages. An example of
+this is the use of the Quartz Enterprise Job Scheduler.
+
+Most Linux distributions already contain almost all of the packages in the
+table above, so you may be wondering why we don't use them. Versions may be
+different, and they may be built differently, e.g. without support for a
+feature we need. It's pretty likely that they'll will work, but we aren't
+taking any unnecessary risks by building known releases ourselves.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_pax What packages does BALTRAD software consist of today?
+Our codebase comprises two different levels of packaging. When we address
+the BALTRAD \a system, we mean <em>enterprise-grade</em> software that has
+gone through all the development, implementation, validation, and
+integration steps required to be described as such. This code is tried,
+tested, and solid. It works together with the rest of the system as
+intended. The current packages that are part of the system are:
+\htmlonly
+<table border="1">
+<tr><th>Package</th> <th>Environment</th> <th>Description</th></tr>
+<tr><td>baltrad-db</td> <td>Python, Java</td> <td>Database manager subsystem</td></tr>
+<tr><td>BaltradDex</td> <td>Java</td> <td>Distribution and Exchange subsystem</td></tr>
+<tr><td>baltrad_wms</td> <td>OGC Map Server</td> <td>Web map services</td></tr>
+<tr><td>bbufr</td> <td>C, Python</td> <td>BALTRAD interface to EUMETNET OPERA's BUFR software</td></tr>
+<tr><td>beamb</td> <td>C, Python</td> <td>Determination of, and correction
+for, beam blockage caused by topography</td></tr>
+<tr><td>beast</td> <td>Java</td> <td>Task manager/scheduler subsystem</td></tr>
+<tr><td>bRopo</td> <td>C, Python</td> <td>Anomaly (non-precipitation echo) detection and removal</td></tr>
+<tr><td>GoogleMapsPlugin</td> <td>Python</td> <td>Creates PNG images for
+use with Google Maps</td></tr>
+<tr><td>node-installer</td> <td>Python</td> <td>Installation wizard</td></tr>
+<tr><td>OdimH5</td> <td>Java</td> <td>Data injector using ODIM_H5 and Rainbow file formats</td></tr>
+<tr><td>RAVE</td> <td>C, Python</td> <td>Product generation framework and
+toolbox. Injector using ODIM_H5 files.</td></tr>
+</table>
+\endhtmlonly
+
+We also have \a lab software that has been developed in the project, and
+that hasn't yet made it into the system. These packages are in different
+stages of development, where they may already give high-quality scientific
+output but are not yet integrated with the system in a harmonized way, and
+other packages may still be being restructured. Such packages show promise and
+can be considered to be in the pipeline. These are currently:
+\htmlonly
+<table border="1">
+<tr><th>Package</th> <th>Environment</th> <th>Description</th></tr>
+<tr><td>BALTRAD HMC</td> <td>C</td> <td>Dual-polarization hydrometeor
+classifier and attenuation correction</td></tr>
+<tr><td>bRack</td> <td>C++, Python</td> <td>Anomaly detection and removal,
+product generation including injective compositing</td></tr>
+<tr><td>RADVOL-QC</td> <td>C</td> <td>Suite of quality-control and
+characterization algorithms for polar data.</td></tr>
+</table>
+\endhtmlonly
+These packages are found in our 
+<a href="http://git.baltrad.eu/lab" target="_blank">lab repository</a>
+together with stand-alone packages like the BALTRAD WMS package.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_inst How do you install the system?
+The node-installer pakage will install those parts of the system that you
+want to use. This is done by downloading the node-installer package itself
+from http://git.baltrad.eu/git and downloading a snapshot, or the tarball
+from http://git.baltrad.eu/manual/releases.html. This is a small package. 
+\verbatim
+$ tar xvzf node-installer.tar.gz
+\endverbatim
+The software will unpack into a directory called "node-installer". After
+that, follow the instructions found in the INSTALL file.
+
+Alternatively, use a Git client as is explained on the "BALTRAD releases" page:
+\verbatim
+$ git clone git://git.baltrad.eu/node-installer.git
+\endverbatim
+Even in this case, the node-installer will download into a directory called "node-installer".
+
+You will tell the node installer which system components you
+want to install and it will download, build, and install them, ensuring that all
+dependencies are resolved. The process is designed to be as "hands-off" as
+possible.
+
+In practise, you will run the "setup" command with several options
+depending on what you want to install. An example installation might look
+like this:
+\verbatim
+$ ./setup --tomcatpwd=<password> --nodename=se.smhi.balthazar \
+--prefix=/opt/baltrad --jdkhome=/usr/java/jdk1.6.0_16 \
+--with-psql=/usr/include/pgsql,/usr/lib64/pgsql --dbpwd=<password> \
+--with-rave --rave-dex-spoe=localhost:8080 \
+--rave-center-id=<Your country's WMO originating center number> \
+install
+\endverbatim
+
+Don't forget to choose your passwords wisely, and put them in a safe place
+that you remember! Also, it's probably a good idea to set your node name
+using a systematic naming convention like the one above that is inspired by
+Java conventions.
+
+There are many more options, and they can be listed by typing 
+\verbatim
+$ ./setup --help
+\endverbatim
+
+That's it, basically. When the software has been built, the node installer
+will install it and under the path defined by --prefix, and then the system
+will be started. More information can be found in the installation section
+of the \ref ug, and of course in the node-installer's INSTALL file.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_all Do you have to install everything?
+No, the modular nature of the system implies that you only install
+those packages containing the functionality you want to use.
+
+For a real-time system, the basic system with no optional parts comprises
+the DEX, the BDB, and the Beast subsystems. The reason why there are no
+setup options like --with-dex is because this is a required subsystem.
+
+This means that our software can be used for networking only, leaving the
+data processing functionality out alltogether if desired.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_nw Do you need a network connection to install?
+Yes and no. You need a network connection to fetch all the packages that
+need to be installed. The node installer itself is quite a small package,
+and it won't fetch anything you don't want to use, so the overall use of
+the web and your disk is kept to a minimum.
+
+You can use the node installer to download all required packages but not
+install them, enabling them to be moved to another machine that is
+protected from the Internet behind a firewall before continuing with the
+real installation.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_ver How can I verify that the system installed properly?
+Normally, the node-installer will indicate if something went wrong. If all
+goes well, you can use your web browser. Type the system's URI in the
+address field. The default URI is localhost:8080, but you may have
+specified another one when you ran "setup". You should see a welcome page
+with a "Welcome to BALTRAD" message. All is well if you see this.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_first What's the first thing I should do after installing a BALTRAD node?
+Change the admin user's password! In the web interface, log into the node
+for the first time using user "admin" and password "baltrad". Then go to
+Settings, User accounts, Edit, and in the list of users you'll see "admin"
+there and a link to change its password to the right.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_stop Oops, this is creepy! How do I stop the system?
+According to \ref faq_inst, go to the "bin" directory under the path that
+you defined by --prefix when you installed the system, and execute
+\verbatim
+[/opt/baltrad/bin]$ ./bltnode -all stop
+\endverbatim
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_data What data are exchanged in BALTRAD?
+We exchange polar data, either individual scans or polar volumes. We
+exchange any radar parameters, from conventional Doppler moments to those
+from dual-polarization systems.  It's up to you to decide what you want to
+make available.
+
+The \a quality of the polar data to exchange is another important issue
+that needs addressing. In BALTRAD we have defined <em>the data that come out of
+the radar</em> as the data to be exchanged. These data are not post-processed in
+any way prior to exchange. The underlying justification for doing this is
+that all data, both your own and those that your friends have sent you, are
+processed by your node, so you want to be able to treat them all on equal
+terms. For example, a user may want to analyze bird signatures. If someone
+has sent you data with these signals already filtered out, then you're in
+trouble. Another example is that processing prior to exchange in BALTRAD
+could lead to undocumented results, so you have no idea what has happened
+to the data prior to your receiving them. Because it is important in
+BALTRAD to keep track of data quality through the processing chain, we
+exchange basic data and then define our own processing chains according to
+our own needs. That having been said, no one is preventing you from
+requesting processed polar data from another node.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_ff What file format(s) does the software accept?
+The file format used in BALTRAD, both for exchange and for processing, is
+<a href="http://www.knmi.nl/opera/opera3/OPERA_2008_03_WP2.1b_ODIM_H5_v2.1.pdf"
+target="_blank">ODIM_H5</a>. This is the EUMETNET OPERA Data Information
+Model implementation with the HDF5 file format. Several radar manufacturers
+offer converters to ODIM_H5, as do some members of the community.
+
+We do not (yet) accept any other file formats for exchange. All other formats
+must be converted to ODIM_H5 before they are injected into a BALTRAD
+node.
+
+However, the data processing functionality in the RAVE package (BALTRAD
+toolbox) can read polar data in OPERA BUFR format.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_dp What are the system's design principles?
+People are experts in different areas, so the system we build together
+should let people contribute by doing what they do best. This should be
+done in a modular way, where subsystems communicate using methods that work
+no matter which of the agreed-upon programming languages is used.
+
+The way we have designed the system is that subsystems communicate through
+\a messaging, using a set of well-defined message types and existing
+protocols. A given system component is thus synonymous with a service at an
+assigned port at an assigned IP number or address. Different subsystems can
+be physically located on different computers. This is good for balancing an
+overall computational load. It's also good for redundancy, giving high
+system resiliency.
+
+We want a system that's easy to manage and use. That's why a lot of the
+administrator's functionality has been made accessible through a
+web-based user interface. Doing it this way is an easy way of bypassing
+IT policies that don't accomodate Linux on the desktop.
+
+The system must scale to continental applications. When designing the
+system, we defined 175 radars as our target for scaling even though the
+project's partnership was much smaller. We are currently trialing our
+software at the European scale, so we will soon know how well our system
+does at it.
+
+A lot more can be said about design; this just scratches the surface.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_interact What are the system components and how to they interact?
+The system components and their interactions can be illustrated in the
+following.
+\image html baltrad-subsystems.png
+The subsystems can be identified by package above in \ref faq_pax
+
+Communications between subsystems is performed using messaging over HTTP. 
+
+Communications between BALTRAD nodes is performed using the Distribution
+and Exchange (DEX) subsystem and MIME messages over HTTP. This system
+interacts with the BALTRAD Database (BDB) that provides a high-level
+interface between the BALTRAD node and the Postgre database server and file
+system containing ODIM_H5 files.
+
+The Beast is also connected to the BDB, and this connection allows the
+Beast to schedule and run various tasks. The Beast operates using the
+concept of \b Adapters (how to do something) and \b Routes (the criteria that
+need to be satisfied in order to do the \a something specified by an
+adapter).
+
+Data processing is performed through an XML-RPC adapter to the RAVE system,
+which is the product generation framework a.k.a. toolbox. RAVE relies on
+receiving messages from the Beast telling it what product to generate, how
+to generate it, and with which input data. RAVE will then either generate
+the product itself, or it will call the relevant package, e.g. beamb, to do
+it. Upon successful completion of the job, the resulting ODIM_H5 file is
+injected into the node through the DEX.
+
+A wb-based user interface allows the user to configure and manage the
+node through a normal browser.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_ssl Are the communications secure?
+Yes, when you or other users access the web interface to interact with your
+node, the connection is secure.
+
+Secure data exchange is achieved through the use of private and public DSA
+keys. When two nodes want to exchange data, no subscription to data can take
+place, and therefore no data transfer can start, unless the nodes have
+exchanged public keys. Presently, the exchange of these keys is performed
+manually by system administrators, through e-mail, telephone, snail-mail,
+pidgeon mail, messages in bottles, or the use of third-party certificate
+authorities, as they agree.
+
+Even when we use the URI prefix "http" instead of "https", the connections
+are all still secure.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_port How many ports do I have to open in my firewall?
+One. We refer to this port as the <em>single point of entry</em>. All
+communications to the node go through the SPOE.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_inj How do I get my own data into my node?
+Data injection is only relevant if you are going to use the system in real
+time. The first step is to convert your data to the ODIM_H5 file
+format. Several radar manufacturers provide converters, and members of the
+community do so too. In BALTRAD, the OdimH5 package contains a converter
+from a proprierary format to ODIM_H5, and the software can be expanded to
+convert from other formats.
+
+When data have been converted to ODIM_H5, the next step is to \a inject them
+into your node. This can be done in two ways:
+\li Use the OdimH5 package in injection mode (Java),
+\li Use the n2b daemon in the RAVE package (Python).
+
+With either injector, the injection process involves secure handshaking
+with the node in the same way as when data are exchanged between nodes.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_flown Describe typical data flow within a node.
+All data arrive to a node through the <em>single point of entry</em>, which
+is the only open port the system needs. This port is used by the DEX
+subsystem. The DEX will unpack the inbound message and extract the ODIM_H5
+payload, forwarding it to the BDB where its contents are entered into the
+database. This is done by mining the ODIM metadata attributes and managing
+them in SQL tables, while the HDF5 files themselves are made accessible in
+a working cache directory where they are rotated. When this is done, the
+BDB notifies both the DEX and the Beast that the data are "available".
+
+The DEX will then check to see if the data match any subscription
+criteria. If they do, then the data are transmitted to those nodes that
+have subscribed to them. 
+
+Simultaneously, the Beast will determine whether the newly-arrived data
+match any criteria defined for processing them. When such criteria have
+been satisfied, the Beast runs its job(s) itself or sends them to the RAVE
+system through an XML-RPC call. In either case, processed data (either in
+the form of quality-controlled data or derived products) are entered back
+into the system through the DEX, and the process repeats itself.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_flowx How do you subscribe to data from another node?
+The following points summarize the procedure, but do not contain some
+necessary detail. Please see the \ref ug for these details.
+\li Contact the other node's administrator, the human being, and determine
+what you want.
+\li Send the other node admin your node's public DSA key.
+\li Wait for confirmation from the other node admin that your key is valid
+and that it has been installed on the other node.
+\li Through your node's web-based user interface, go to the "Exchange" menu
+and the "Connect" page. Once there, in the "Define new connection" field,
+enter the other node's URI, and then press the Connect button.
+\li You should be presented with a list of so-called "Data sources", where
+each source represents data that you are entitled to subscribe
+to. Subscribing is done by checking the "Select" box for the sources you
+want and then pressing "OK".
+\li Verify the subscription by going to the "Home" menu and "Exchange
+status" page and expanding the name of the other node to see what you have
+subscribed to.
+
+Note that data are pushed safely from originating node to recipient node
+after the subscription has been set up. The originating node decides which
+recipient nodes are entitled to subscribe to which data. The remote node that
+wishes to subscribe to data only subscribes to those data that it is given
+permission to subscribe to. This done through a mechanism called
+<em>selective catalog exposure</em>. And the receiving node ensures that
+nothing is pushed to it that it hasn't asked for.
+
+The manual parts of data subscription, ie. configuring the public keys, may
+be automated in future system versions.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_offline Can I use the software off-line, ie. not in real time?
+Yes, but you probably won't need the node software itself because its
+primary task is to take care of data exchange with other nodes. Off-line
+use is more related to processing the data, in which case the
+BALTRAD toolbox is probably what you're interested in.
+
+In this case, you can install the RAVE package with its dependencies. You
+can also install the other data processing modules that use RAVE as a
+dependency. These packages can be used and completely off line, with no
+connection to any BALTRAD node. The RAVE package allows users to work with
+data interactively through a Python interpreter, as well as running
+binaries on the command line.
+
+Any other package that is designed for command-line use will not need and
+connection to a running node, and will therefore be useable off line.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_contrib How can I contribute my data-processing algorithm to the BALTRAD toolbox?
+Start by taking a look at your code before looking at ours. Algorithms
+should be written in C or C++, although we haven't closed the door
+completely on Fortran.
+
+Does your code separate the reading/writing of files from the functionality
+that processes the data? We want as clear a separation as possible because
+we want to combine different algorithms from different contributors in
+memory. To achieve this, we use the same read/write functionality for all
+data, through the RAVE package's C API to the ODIM_H5 file format. The
+concept looks like this:
+\li Read ODIM_H5 data using RAVE at the C level
+\li Map RAVE's C objects holding ODIM_H5 data and metadata to your data structures
+\li Run your algorithm
+\li Map your return data structures to RAVE's corresponding C objects
+\li Write ODIM_H5 data using RAVE at the C level
+
+When this is achieved, the separation between the file I/O and the
+algorithm itself means we can chain different algorithms in memory, and
+minimizing unnecessary reading/writing of files is a great way of improving
+performance. Doing this is also a great way of off-loading the
+responsibility of managing the file I/O on us, and this helps you focus on
+the science. An additional advantage of this is that we can be confident
+that the file I/O will always give consistent results, so the risk of
+people writing non-compliant ODIM_H5 is minimized.
+
+This procedure implies that you use our file I/O routines as a dependency,
+but you control your algorithm. If you are thinking of implementing a new
+algorithm from scratch, consider taking a look at the C APIs in RAVE. They
+are modeled around ODIM_H5 and are designed to help manipulate polar
+volume, polar scan, polar scan parameter, Cartesian, and other objects at a
+fairly intuitive level. These include accurate coordinate transforms using
+the PROJ.4 projections library in the background.
+
+You can stop there and contribute your results. Or you can
+continue. Preferably, we want the low-level languages for their performance
+and then write a wrapper to a high-level language Python or Java to manage the
+algorithm more easily. We're pretty good at this, so we can either do it or
+help you do it.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_viz How does visualization work in BALTRAD?
+There is no direct visualization in our node software. Instead, we have
+packages that generate output that can be used with Google Maps or Web Map
+Services. There is a small exception to this, where you can use the user
+interface to the node to create simple PPI output of individual scans.
+
+This is a conscious decision in BALTRAD. Different partners use different
+visualization systems, and these are often subject to strict policy that we
+don't want to mess with, so we don't.
+
+In off-line mode, you can use the command-line tool "show" to create very
+simple screen plots, so-called "quick looks" of radar datasets. "show"
+reads ODIM_H5 data and displays a given radar variable or quality field
+based on its path in the file, defaulting to /dataset1/data1/data. For
+example, the reflectivity in the lowest scan of a polar volume (containing
+rain and also lots of contaminated sectors from external emitters) would be
+shown like this 
+\verbatim
+$ show -i file.h5
+\endverbatim 
+and the result would be this window, where the top-left corner is the start
+of the ray pointing north, and each row is a new ray scanning
+clockwise. This is a typical B-scan display. Pressing the 'h' key gives you
+a list of simple things you can do with this window.
+\image html dbzh.png
+You can also use "show" to show Cartesian products. Note, however, that you
+need Python with PyGTK (Python interface to the 
+<a href="http://www.gtk.org" target="_blank">GIMP Toolkit</a>) to use
+"show". Any credible Linux distribution will have this already.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_ia How do I use the BALTRAD toolbox interactively?
+By installing the RAVE package, you can access the toolbox on the command
+line and also from within a Python interpreter. The latter makes working
+with the toolbox interactive, which makes tasks like prototyping new
+algorithms quicker and more efficient. Taking the polar data illustrated in
+the plot above, the following simple example shows you how the toolbox
+functionality is used to read ODIM_H5 data, and how the toolbox objects are
+modelled after ODIM_H5. The following example shows how we access the only
+quality dataset in the volume's lowest scan; this quality field contains
+the probability of non-precipitation based on a set of anomaly detectors
+from the bRopo package.
+\verbatim
+$ python
+Python 2.6.4 (r264:75706, Jan  5 2012, 19:49:31)
+[GCC 4.1.2 20080704 (Red Hat 4.1.2-48)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import _raveio, rave_ql
+>>> io_container = _raveio.open('pvol.h5')
+>>> polar_volume = io_container.object
+>>> first_scan = polar_volume.getScan(0)
+>>> quality_field = first_scan.getQualityField(0)
+>>> data = quality_field.getData()
+>>> rave_ql.ql(data)
+\endverbatim
+and "ql" will give the following view of the quality field, where cold
+colors show low probabilities and warm colors show high ones. Note,
+however, that you need Python with PyGTK (Python interface to the 
+<a href="http://www.gtk.org" target="_blank">GIMP Toolkit</a>) to do this.
+\image html poa.png
+As an alternative to doing this interactively, you can write scripts that
+do the same thing.
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_plot Can I use BALTRAD software to create publication-quality radar plots?
+With difficulty, at least at the moment. To do this, you could use RAVE
+with a version of Python that contains 
+<a href="http://www.scipy.org" target="_blank">SciPy</a>, and use the
+plotting functionality in it. Or you roll your own interface another way
+using data read from ODIM_H5 files. We welcome such a contribution!
+
+\htmlonly<hr>\endhtmlonly
+
+\section faq_ca What happens when our external money runs out?
+The community will live on. The partnership's cooperation is regulated
+through the BALTRAD Cooperation Agreement which contains mechanisms
+designed to safeguard the day-to-day maintenance and continued development
+of the network and the software system. Want to be part of this
+community-based weather radar networking? Get in touch.
+
+ */

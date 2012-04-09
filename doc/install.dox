@@ -1,0 +1,458 @@
+/** \page install Installation
+\date January 2012
+\version 1.0
+
+Welcome to the installation chapter of the user guide. BALTRAD software has
+been built and installed in seven countries already, and at least three
+more are doing it soon. If it works for us, it can work for you.
+
+The golden rule when it comes to installation in BALTRAD is that
+instructions should always be provided in a text file called INSTALL. This
+is the ultimate installation reference, and it takes precidence over
+fancier documentation like this. It's also likelier that the INSTALL file
+will be updated quicker than this page. However, we will do our best to
+present the same information here in a more attractive way that gives a
+little more context than the terseness of the reference.
+
+In the following, we assume that you are interested in installing a BALTRAD
+\a node, which is a complete system comprising the collection of various
+subsystems. If you want to install any of these individual subsystems
+alone, please consult that package's INSTALL file.
+
+\li \ref in_prep
+\li \ref in_repo
+\li \ref in_ps
+\li \ref in_in
+\li \ref in_fw
+\li \ref in_up
+\li \ref in_ref
+
+\section in_prep Preparation - what's going to happen
+Double-check \ref req_sw to make sure you have installed a 64-bit
+Linux. Make sure all the required software is installed and at least the
+versions given in the table.
+
+The software installation process will make heavy use of Python to fetch
+software and install it. The first thing that will be done is that the
+installer will determine if you have a Python installation that can be used
+for its purposes. If it can't find one, then it will bootstrap a Python for
+you and continue using it. As long as you specify where all the software
+should be installed, preferably not in a place where it will conflict with
+existing things, then all will be fine. The default location is
+\c /opt/baltrad.
+
+Most Linux distributions already contain almost all of the software that we
+will install, so you may be wondering why we don't use them. Versions may be
+different, and they may be built differently, e.g. without support for a
+feature we need. It's pretty likely that they'll will work, but we aren't
+taking any unnecessary risks by building known releases ourselves.
+
+You can use our installer to download all required packages but not
+install them, enabling them to be moved to another machine that is
+protected from the Internet behind a firewall before continuing with the
+real installation. We will return to this issue later in this chapter.
+
+\section in_repo Repository and downloading the node-installer
+We run a
+<a href="http://git-scm.com/" target="_blank">Git</a> repository internally
+in the partnership, so it makes sense to use the same service for public
+releases.
+
+The package that installs the complete BALTRAD node is called the
+<b>node-installer</b>, and it can be downloaded from the BALTRAD Git
+repository at <a href="http://git.baltrad.eu/git"
+target="_blank">http://git.baltrad.eu/git</a>, which is the repository's
+web interface. You can download a snapshot from the node-installer.git
+project, in which case you'll download a tarball (.tar.gz file).
+
+You can also grab the latest release from the command line if you have (or
+download and install) a 
+<a href="http://git-scm.com/download" target="_blank">Git client</a>. In
+this case, do the following:
+\verbatim
+$ git clone git://git.baltrad.eu/node-installer.git
+\endverbatim
+Doing this will download the node installer in a directory named
+<tt>./node-installer</tt>. You can immediately change to this directory and
+read the INSTALL file. Don't try to install anything before you're prepared
+a database, as is described next.
+
+For those who don't want to use Git at all, there's our 
+<a href="http://git.baltrad.eu/manual/releases.html"
+target="_blank">Releases</a> page where you should always be able to find a
+tarball. 
+
+BALTRAD lab software and stand-alone packages that don't communicate with
+the \e node are also available for direct download at http://git.baltrad.eu/lab
+
+\section in_ps Preparing a database
+We use a Postgre SQL server. It doesn't have to be physically located on
+the same machine that you're using to install your BALTRAD node. Start by
+checking how secure your Postgre server is. Optionally you can raise its
+security level a bit by editing the
+<tt>/var/lib/pgsql/data/pg_hba.conf</tt> file. Towards the bottom, the
+entries should appear as here:
+\verbatim
+# TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
+
+# "local" is for Unix domain socket connections only
+local   all         all                               md5
+# IPv4 local connections:
+host    all         all         127.0.0.1/32          md5
+# IPv6 local connections:
+host    all         all         ::1/128               md5
+\endverbatim
+If you did this, then you have to restart the server:
+\verbatim
+root# service postgresql restart
+\endverbatim
+This was an optional step. Next, we create the database and database user
+for the node. As user \c postgres:
+\verbatim
+# su - postgres
+$ psql
+psql (version)
+Type "help" for help.
+postgres=# CREATE USER baltrad with PASSWORD 'baltrad';
+postgres=# CREATE DATABASE baltrad with OWNER baltrad;
+\endverbatim
+You can choose other names for your database and user, and you should
+probably use another password, but please keep track of them; for the
+purposes of this documentation, we'll continue using these ones. If your
+database is on another machine, then keep track of that machine's IP number!
+
+\section in_in Installing the software
+Installation is a one-liner! The command to use is \c setup.
+
+\c setup comes with a lot of arguments and options. To list them all, run
+\verbatim
+$ ./setup --help
+\endverbatim
+This may appear to be a bit of a jungle at first sight, but \c setup is a
+systematic, comprehensive, and powerful tool. Let's make sense out of
+this. A basic installation that will give you a node for exchanging data
+can be installed with the following command, assuming the node is
+located at SMHI on a CentOS machine and the passwords have been kept secret:
+\verbatim
+$ ./setup --tomcatpwd=<> --nodename=se.smhi.balthazar --prefix=/opt/baltrad \
+--jdkhome=/usr/java/jdk1.6.0_16 \
+--with-psql=/usr/include/pgsql,/usr/lib64/pgsql --dbpwd=<> install
+\endverbatim
+The tomcat password should be set using the \c --tomcatpwd argument; this
+will make the tomcat server much more secure. The node name given using the
+\c --nodename argument should use a systematic naming convention; we
+recommend one inspired by Java which is like reverse Internet domain
+addresses. The other arguments point out the root directory under which all
+software is to be installed (\c --prefix), the location of you JDK SDK,
+where your Postgre installation's headers and libraries are, and your
+database's password.
+
+Save your use of \c setup to file. You can even use it as as simple script.
+
+The first time you install the system is going to take some time because
+there's a lot of software to be built, so just sit back and enjoy the show!
+When installation is finished and successful, you should see something like
+this:
+\verbatim
+===== SUCCESS ======
+System has sucessfully been installed and started
+You should be able to access the system by navigating a browser to:
+http://localhost:8080/BaltradDex
+
+
+Your BDB sources might not be up-to-date. You can import them from
+Rave's radar-db with the following command:
+
+/opt/baltrad/baltrad-db/bin/baltrad-bdb-client \
+  import_sources \
+  --url=http://localhost:8090 \
+  --dry-run \
+  /opt/baltrad/rave/config/odim_source.xml
+
+You can omit some changes by adding '--ignore=src' to the command.
+Once you are satisified with what the importer will do, omit the
+'--dry-run' switch and let it work on the actual database.
+\endverbatim
+Don't mind the part about the BDB for now. We'll get to that in \ref
+config. Use your web browser with the URI given above. If you see something
+like this, then you've succeeded!
+\image html login_page.png
+
+A slightly more complex installation involves installing the BALTRAD
+toolbox with several packages containing tools:
+\verbatim
+$ ./setup --tomcatpwd=<> --nodename=se.smhi.balthazar --prefix=/opt/baltrad \
+--jdkhome=/usr/java/jdk1.6.0_16 \
+--with-psql=/usr/include/pgsql,/usr/lib64/pgsql --dbpwd=<> \
+--with-rave --rave-dex-spoe=localhost:8080 --rave-center-id=82 \
+--with-rave-gmap --with-bropo --with-beamb --with-bufr install
+\endverbatim
+Note that we have explicitly specified the BALTRAD node's <em>single point
+of entry</em> so that RAVE will know where to inject files. This is done
+with the \c --rave-dex-spoe argument. We've also set the WMO code for the
+originating centre using the \c --rave-center-id argument. It is important
+that you use your country's center ID number if you're running BALTRAD at a
+national meteorological service!
+
+If, for some reason, you need to re-install one or more packages, use the
+\c --rebuild option and list them before re-running \c setup. To avoid
+reinstalling database tables, use the \c --excludedb argument. To
+explicitely reinstall them, use the \c --reinstalldb argument. This will
+wipe out whatever configuration you had previously. This is more relevant
+when you are \ref in_up (see below). 
+
+There are lots more arguments and options, for example for specifying the
+location of the database server, the ports used by the tomcat server and
+BDB. Please see the \ref in_ref for a systematic tabulation of them all.
+
+\section in_fw Installing behind a firewall
+This is a short section. \c setup comes with a couple of commands 
+that you can use to download, but not install, all the packages 
+on to a machine that's exposed to the Internet. That gives you the
+ability to transfer everything to the protected machine and continue the
+installation there. There are two options:
+\li \c -fetch will fetch all packages
+\li \c -dist will create a distribution tarball that you can move wherever
+you want.
+
+\section in_up Upgrading to a new node version
+The easiest way to upgrade to a new version is to use your Git client to
+synchronize with the repository at git.baltrad.eu. Just enter the \c
+node-installer directory on your machine and
+\verbatim
+$ git pull
+\endverbatim
+That'll do it. Following this synchronization, just run \c setup again,
+like you did the first time. If the release notes don't mention any changes
+to the database tables, you can safely add the \c --excludedb option to
+avoid messing with them.
+\verbatim
+$ ./setup --tomcatpwd=<> --nodename=se.smhi.balthazar --prefix=/opt/baltrad \
+--jdkhome=/usr/java/jdk1.6.0_16 \
+--with-psql=/usr/include/pgsql,/usr/lib64/pgsql --dbpwd=<> --excludedb \
+--with-rave --rave-dex-spoe=localhost:8080 --rave-center-id=82 \
+--with-rave-gmap --with-bropo --with-beamb --with-bufr install
+\endverbatim
+You should get the same <tt>===== SUCCESS ======</tt> message again with
+each upgrade.
+
+\section in_ref setup reference
+Note: this information may be updated in your \c setup before it is updated
+here.
+\verbatim
+NODE INSTALLER
+Usage: setup <options> command, use --help for information
+
+This is the main installation script for installing a baltrad node.
+Most of the installation is handled without any interaction. However
+if you don't want to specify --tomcatpwd on command line you will
+get a question about it. 
+
+The script will remember several configuration parameters between
+runs but some of them will not be stored, like passwords and
+similar items. If you want to use the previous parameters, then
+you can specify --recall-last-args
+
+Command:
+Valid commands are:
+ - install
+     Installs the software
+     
+ - check
+     Checks that the provided dependencies are correct
+
+ - clean
+     Cleans up everything
+
+ - fetch
+     Fetch all packages so that it is possible to run an installation
+     in 'offline' mode. It will atempt to clean up any unessecary 
+     content but it is suggested to execute clean prior fetch.
+ 
+ - dist
+     Create distribution tarball
+     
+Options:
+--help
+    Shows this text
+
+--recall-last-args
+    If you want to use the previous arguments, then you can use
+    this option. It will try to restore the configuration parameters
+    used in the last run. 
+
+--nodename
+    This attribute should really be specified but there is a default value which
+    is the hostname as shown by the command 'hostname'.
+
+--prefix=<prefix>
+    Points out where the system should be installed. 
+    [Default /opt/baltrad]
+    
+--tprefix=<prefix>
+    Points out where the third-party software should be installed.
+    [Default <prefix>/third_party]
+    
+--jdkhome=<jdkhome>
+    Points out the jdkhome directory. If omitted, the installer will
+    try to find a valid jdk.
+
+--keystore=<path>
+    Point out the keystore directory to use when configuring setting up the
+    different modules for certification. If not specified, one will be
+    created for you in /opt/baltrad/etc/bltnode-keystore.
+
+--with-zlib=yes|no|<zlibroot>|<zlibinc>,<zliblib>
+    Specifies if zlib should be built by the installer or not. 
+    [Default yes]
+    - 'yes' means that the installer should install the provided zlib
+    - 'no' means that the installer should atempt to locate a valid
+      zlib installation
+    - zlibroot specifies a zlib installation where includes can be 
+      found in <zlibroot>/include and libraries can be found in 
+      <zlibroot>/lib
+    - <zlibinc>,<zliblib> can be used to point out the specific 
+      include and library paths
+
+--with-psql=<psqlroot>|<psqlinc>,<psqllib>
+    Specifies where to locate the postgresql include and library files.
+    If omitted the install script assumes that they can be found in 
+    the standard locations.
+    - psqlroot specifies a postgres installation where includes can be 
+      found in <psqlroot>/include and libraries can be found in <psqlroot>/lib
+    - <psqlinc>,<psqllib> can be used to point out the specific 
+      include and library paths
+
+--with-freetype=<freetypeinc>,<freetypelib>
+    In order to get freetype support built in the PIL imaging library
+    (for use with Google Maps Plugin). You might have to specify this
+    library. <freetypeinc> is the path to the freetype include directory
+    as shown when executing freetype-config --cflags excluding the -I of course.
+    <freetypelib> is the path where libfreetype.so can be found.
+
+--dbuser=<user>
+    Specifies the database user to use. 
+    [Default baltrad]
+
+--dbpwd=<pwd>
+    Specifies the database user password to use. 
+    [Default baltrad]
+    
+--dbname=<name>
+    Specified the database name to use. 
+    [Default baltrad]
+
+--dbhost=<host>
+    Specified the database host to use. 
+    [Default 127.0.0.1]
+
+--with-hdfjava=<hdf java root>
+    Specifies the hdf java root installation directory. 
+    If omitted, the installer will install it's own version of hdf-java.
+    
+--reinstalldb
+    Reinstalls the database tables. Use with care.
+
+--excludedb
+    Ignores installation of the database tables. Might be since they
+    already has been installed. This will cause the DBINSTALL package
+    to be set as installed.
+    
+--runas=<user>
+    Specifies the runas user for tomcat and other processes. It is not 
+    allowed to use a runas user that is root due to security-issues. 
+    [Defaults to user that is installing]
+
+--datadir=<dir>
+    The directory where all the data storage files should be placed for baltrad-db.
+    [Default <prefix>/bdb_storage]
+
+--urlrepo=<url>
+    The url from where the url packages can be fetched.
+    [Default http://git.baltrad.eu/blt_dependencies]
+    
+--gitrepo=<url>
+    The url from where the baltrad node git packages can be fetched.
+    [Default gitosis@git.baltrad.eu]
+
+--with-rave
+    Install the rave pgf
+
+--rave-pgf-port=<port>
+    Set the port rave should run on.
+    [default: 8085]
+
+--with-bufr
+    Install the bufr software. This will also affect rave so that if
+    we have specified bufr support rave will be built with bufr support
+    enabled as well.
+
+--rave-center-id=<id>
+    Originating center id to be used by rave as the source of its products.
+    [default: 82]
+
+--rave-dex-spoe=<spoe>
+    Dex's single point of entry to be used by rave. 
+    [default: localhost:
+    
+--with-rave-gmap
+    Install the rave google map plugin. Will also cause rave pgf to be installed.
+
+--with-bropo
+    Install the anomaly detector bropo. Will also cause rave to be installed.
+
+--with-beamb
+    Install the beam blockage detector beamb. Will also cause rave to be installed.
+
+--with-bdbfs
+    Will build and install the baltrad db file system driver
+
+--bdb-port=8090
+    BDB server port
+
+--bdb-pool-max-size=<N>
+    Set the pool size for bdb connections to <N>
+    [default: 10]
+
+--rebuild=<module1>,<module2>,...
+    Will force a rebuild and installation of the specified modules. To get a 
+    list of available modules and their versions. See option --print-modules.
+    E.g. --rebuild=TOMCAT,RAVE
+    
+--print-modules
+    Prints all available modules and their respective version.
+    
+--print-config
+    Prints the build configuration
+    
+--exclude-tomcat
+    Will exclude installation of tomcat. This is not a recommended procedure but 
+    it is here for the possibility to use your own tomcat installation if it 
+    is necessary.
+
+--tomcatport=<port>
+    Specifies the port on which the tomcat installation should listen on.
+    Don't use together with --tomcaturl. 
+    [Default 8080]
+
+--tomcaturl=<url>
+    Specifies the tomcat url where the tomcat installation resides. Don't
+    use together with --tomcatport. 
+    [Default http://localhost:8080]
+    
+--tomcatpwd=<pwd>
+    Specifies the password that should be used for the manager in the tomcat
+    installation.
+    
+--force
+    Unused at the moment
+    
+--experimental
+    When running into problems with building, like missing libraries, link problems
+    or other miscellaneous problems. This might be the option to specify. Some modules
+    are currently beeing evaluated if they are stable enough to be used in production
+    and by specifying this option these modules will be built instead.
+    
+\endverbatim
+
+ */

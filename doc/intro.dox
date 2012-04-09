@@ -1,0 +1,55 @@
+/** \mainpage Community-based weather radar networking
+\date January 2012
+\version 1.0
+\par Copyright 
+&copy; 2012 Swedish Meteorological and Hydrological Institute (SMHI), Norrk&ouml;ping, Sweden <br> on behalf of the BALTRAD partnership
+
+\par Legals
+BALTRAD is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+\par
+BALTRAD is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
+
+\par
+You should have received a copy of the GNU Lesser General Public License
+along with BALTRAD.  If not, see http://www.gnu.org/licenses/.
+By obtaining, using, and/or copying this software and/or its associated 
+documentation, you agree that you have read, understood, and will comply
+with the following terms and conditions:
+
+\section introduction Introduction
+
+Welcome to BALTRAD! This page is the first place to come to become aquainted with us. We hope you will like what you see and read.
+
+We have divided up this documentation into a Frequently Asked Questions (FAQ) part, and a User Guide part. The FAQ should probably be consulted first, because it will help you understand what BALTRAD is, and the principles guiding it, whereas the User Guide is more focussed on helping you get started with the system. Another way of putting it is that the FAQ will give you an overview and the User Guide will give you more substance.
+
+The finest level of detail will be available in each software package's documentation, which is available when it is built. If you build a so-called "BALTRAD node", the documentation of the packages you decide to build will be built automatically, and that is where to look for such details.
+
+Enjoy!
+
+\htmlonly
+<hr>
+\endhtmlonly
+TAKE ME TO ...
+
+\ref faq 
+
+\ref ug
+<hr>
+\htmlonly
+<table border="0">
+<tr>
+<td><img src="EU_logo.jpg"</td>
+<td><center>Part-financed by the European Union (European Regional Development Fund and European Neighbourhood and Partnership Instrument)</center></td>
+<td><a href="http://eu.baltic.net/" target="_blank"><img src="BSR-logo.png" /></a></td>
+</tr>
+</table>
+\endhtmlonly
+
+ */
