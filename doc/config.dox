@@ -157,7 +157,7 @@ the OdimH5 documentation on how to install, configure, and use it.
 
 \li The \b n2b injector in the RAVE package. You'll find it in RAVE's 'bin'
 directory. Note that you don't need your node's whole software
-installation, just the RAVE package itself. Run
+installation, just the RAVE package and RAVEs dependencies like hlhdf and pyinotify. Run
 \verbatim
 $ n2b --help
 \endverbatim
