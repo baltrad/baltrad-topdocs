@@ -88,8 +88,8 @@ e.g. a polar scan or volume, and then you can expose them selectively to
 other nodes via their peer users that connect to your node. We'll deal with
 the peer users later.
 
-Adding a data source takes a few steps. Go to "Settings" --> "User
-accounts" --> "Add". We'll use the Swedish radar at Stockholm-Arlanda
+Adding a data source takes a few steps. Go to "Settings" --> "Data
+sources" --> "Add". We'll use the Swedish radar at Stockholm-Arlanda
 airport as an example. Start by adding a source name and description.
 \image html data_source_name.png
 Then continue by associating the radar you just configured with it. Note
