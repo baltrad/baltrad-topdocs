@@ -580,6 +580,31 @@ you defined by --prefix when you installed the system, and execute
 
 \htmlonly<hr>\endhtmlonly
 
+\section faq_upgrade_db_to_100_problem I can't upgrade to 1.1.0 due to db timeouts
+We had to create some new indexes when upgrading to 1.1.0. This have the unfortunate
+side effect that if you have a lot of file entries it might cause your upgrade to fail.
+If you read this before you run into the problem it might be a good idea to clean
+the database from the data you don't need and perform the following command in psql.
+\verbatim
+baltrad=> analyze verbose bdb_nodes;
+\endverbatim
+
+If you however read this after you got the failed upgrade, then you can try these steps
+out.
+
+\verbatim
+baltrad=> delete from bdb_files cascade where stored_date < 'YYYY-MM-DD';  removes all files older than YYYY-MM-DD
+baltrad=> analyze verbose bdb_nodes;
+\endverbatim
+
+If you just want to get on the road again without caring about the old files.
+
+\verbatim
+baltrad=> truncate bdb_files, bdb_nodes, bdb_attribute_values;
+\endverbatim
+
+\htmlonly<hr>\endhtmlonly
+
 \section faq_data What data are exchanged in BALTRAD?
 We exchange polar data, either individual scans or polar volumes. We
 exchange any radar parameters, from conventional Doppler moments to those
