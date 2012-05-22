@@ -893,6 +893,13 @@ need Python with PyGTK (Python interface to the
 <a href="http://www.gtk.org" target="_blank">GIMP Toolkit</a>) to use
 "show". Any credible Linux distribution will have this already.
 
+However, since the baltrad installation does not include installation of pygtk you
+will have to manage that operation yourself. One easy way is to make sure that you
+get pygtk installated on your system python interpreeter and then copy pygtk.py and
+pygtk.pth into the python site-packages directory of the baltrad installation. Then
+modify pygtk.pth to point at the proper location. Another way is to install pygtk
+into the baltrad python installation but that is left to the user to try.
+
 \htmlonly<hr>\endhtmlonly
 
 \section faq_ia How do I use the BALTRAD toolbox interactively?
