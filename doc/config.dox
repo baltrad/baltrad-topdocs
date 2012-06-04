@@ -163,6 +163,11 @@ $ n2b --help
 \endverbatim
 to see what options you have.
 
+\b n2b is based on the file based inotify which means that it will react
+each time a file is placed in a specific directory. This means that each
+time a file is placed in the specified directory, an atempt will be made
+to inject the file into the dex node by using the rave baltrad injector.
+
 Both injectors work from remote computers, ie. not the same machine as the
 one running your BALTRAD node. If this is how you want to do it, then you
 have to ensure that the injector you choose is propery configured when it
