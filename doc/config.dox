@@ -1,6 +1,6 @@
 /** \page config Configuration
-\date January 2012
-\version 1.0
+\date October 2013
+\version 1.1
 
 Congratulations! If you've come this far, it means you've succesfully
 followed the instructions in \ref install and you have a node that is up and
@@ -24,15 +24,15 @@ pre-configured user called \c admin, and this user's password is
 'baltrad'. You have to log on using the web-based user interface and change
 it to something only you know. 
 
-Go to the "Settings" --> "User accounts" --> "Edit" page. There you'll see
-the \c admin user and a link to the right called "Change" under the heading
-"Password". Use a safe password, and store it in a safe place that you
-remember.
+From the main menu placed in the left column, click "User accounts" --> "Edit" 
+link (located in the "Settings" section). There you'll see the \c admin user 
+and a link to the right called "Change" under the heading "Password". 
+Use a safe password, and store it in a safe place that you remember.
 
 \section con_ns Configure your node settings
-Go to "Settings" --> "Node settings". This is where you should identify
-your node properly. If you didn't build your node with \c --nodename, then
-your default node name will be your computer's \c hostname. Your node
+Click "Node settings" from the left-column menu. This is where you should 
+identify your node properly. If you didn't build your node with \c --nodename, 
+then your default node name will be your computer's \c hostname. Your node
 should be type "Primary".
 
 The "node address" is very important. If the URI contains "localhost" or
@@ -69,17 +69,15 @@ radars operated by other organizations too if you plan on forwarding their
 data to other nodes, but we will only deal with your data here for the sake
 of simplicity.
 
-Go to the "Settings" --> "Radars" page and "Add" a new radar. The only
-information you need is the radar's name and its WMO number. The name is
-easy: don't use a crypticly coded name, use the name of the place that
-people refer to it as, e.g. "Arlanda". That's a lot easier for a human
-being to remember than "02451"...
+Select "Radars" from the main menu and "Add" to define a new radar. 
+The selection of radars is predefined based on the set of European weather radar 
+identifiers, also used in RAVE package. These identifiers are found in an XML 
+file being a copy of a file used by RAVE. Click on the center identifier in 
+the left column to expand the list of radar stations available for the selected
+center. Select a desired radar and click the "Save" button. Radar station 
+will be saved in local database.
 
-The WMO "number" is a different story. It should be a combination of five
-(5) digits, where the first two are the "block" number and the last three
-are the "station number". So, even if your block is only one digit, it
-should be padded with a zero, e.g. Sweden is "02". If your radar doesn't
-have a WMO number, just use "00000".
+\image html radars_add.png
 
 \section con_ds Add one or several data sources
 We use "data sources" in BALTRAD for identifying data that are available
@@ -88,29 +86,30 @@ e.g. a polar scan or volume, and then you can expose them selectively to
 other nodes via their peer users that connect to your node. We'll deal with
 the peer users later.
 
-Adding a data source takes a few steps. Go to "Settings" --> "Data
-sources" --> "Add". We'll use the Swedish radar at Stockholm-Arlanda
-airport as an example. Start by adding a source name and description.
-\image html data_source_name.png
-Then continue by associating the radar you just configured with it. Note
-that you have to select a radar from the drop-down list and then press the
-green "+" button for your choice to be validated. This technique is used on
-subsequent pages. You can add several radars, and you can remove the last
-one by pressing the "-" button.
-\image html data_source_radar.png
-After that, specify what type of data from this radar are relevant for
+In order to define a data source, select "Data sources" --> "Add" from the 
+"Settings" section of the main menu. The example uses Polish radar located in 
+Legionowo, as shown in the image below. 
+
+\image html data_source_add.png
+
+Start by adding a source name and description. Then continue by associating 
+selected radar with it. To achieve this, select desired radar from the 
+"Available radar stations" and click the ">" button to add the radar. Selected
+radar will be moved to "Selected radar stations" list. In order to remove 
+radar from selection, use the button marked with "<" sign. 
+The same approach is applied to the selection of the remaining data source 
+parameters.
+
+Next specify what type of data from this radar are relevant for
 exchange. If your radar sends you data one scan at a time, then select
 "SCAN". If the radar sends a complete polar volume all at once, then select
 "PVOL". Don't worry about the other menu items for now.
-\image html data_source_object.png
-Then you link users to this data source. Normally, you would use "peer"
-users (who we'll discuss later in \ref subscribe), but you can start by
-just linking the \c admin for lack of any other.
-\image html data_source_user.png
-Finally, you're presented with a summary of this data source configuration,
-which you can confirm by pressing "Save".
-\image html data_source_summary.png
-Editing data sources is done with the same procedure.
+Then you link users to this data source. Note that only peer users can be linked
+with a data source (it is not possible to assign local users like "admin" or 
+"operator" to a data source). Finally, click "Save" to store the data source.
+
+Editing data sources is done with the same procedure. To edit an existing data 
+source, select "Data sources" and "Edit" from the main menu.
 
 You can combine several radars into one data source. Likewise, you can
 combine several types of data in a single data source. A \b warning, however,
@@ -122,14 +121,16 @@ same data source, then it means they'll receive the same data twice.
 
 \section con_lr Keeping the system log clean
 You should configure your system log so that it doesn't overflow with
-messages. This is done in "Settings" --> "System messages" --> "Configure".
+messages. This is done by selecting "Messages" --> "Configure" from the 
+"Settings" section of the main menu.
 \image html logs_conf.png
 
 \section con_dr Keeping the delivery registry clean 
 You should configure your delivery registry so that it doesn't overflow with
 messages. This registry contains all information on successful and failed
-data transfers. Configuring the registry's size is done in "Settings" -->
-"Delivery registry" --> "Configure". 
+data transfers. Configuring the registry's size is done by selecting 
+"Delivery registry" --> "Configure" from the "Settings" section of the main 
+menu.
 \image html dr_conf.png
 
 \section con_dat Getting your own data into your node
@@ -140,7 +141,7 @@ mechanism.
 
 But before you inject your data, they must be converted to the ODIM_H5 file
 format. There are several good converters available from within the
-community and from manufacturers. Ask around if the anyone has already
+community and from manufacturers. Ask around if anyone has already
 succeeded in converting from the format that your radar uses; chances are
 good that someone has something you can use.
 
@@ -157,7 +158,8 @@ the OdimH5 documentation on how to install, configure, and use it.
 
 \li The \b n2b injector in the RAVE package. You'll find it in RAVE's 'bin'
 directory. Note that you don't need your node's whole software
-installation, just the RAVE package and RAVEs dependencies like hlhdf and pyinotify. Run
+installation, just the RAVE package and RAVEs dependencies like hlhdf and 
+pyinotify. Run
 \verbatim
 $ n2b --help
 \endverbatim
@@ -177,8 +179,8 @@ comes to communication security, which is covered in \ref secure.
 A classic problem that causes systems to stop working is that the
 computer's disks become full. In BALTRAD, its your database (BDB subsystem)
 that stores your data. It's very easy to configure it to a comfortable size
-that suits your needs. This is done by creating a new route in "Processing"
---> "Routes" --> "Create DB trim age", e.g.
+that suits your needs. This is done by creating a new route in "Processing" 
+section of the main menu. Select "Routes" --> "Create DB trim age", e.g.
 \image html bdb_age.png
 Note that when the route has been defined, it must also be scheduled. You
 don't need to do this scheduling for normal data processing tasks, just the

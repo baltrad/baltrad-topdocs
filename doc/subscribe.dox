@@ -1,6 +1,6 @@
 /** \page subscribe Exchanging data
-\date January 2012
-\version 1.0
+\date October 2013
+\version 1.1
 
 In BALTRAD, you control \b who is allowed access to \b what. We recognize
 that we live in an international world where we benefit from exchanging
@@ -40,7 +40,8 @@ In the web-based user interface, go to "Exchange" --> "Connect", and this
 time select from the drop-down list under "Select connection". The remote
 node's name should appear in this list. Select it and press the "Connect"
 button. In the following example, the node has connected to a node called
-"Sweden" that has allowed us to subscribe to polar scans from a Swedish radar.
+"baltrad2.imgw.pl" that has allowed us to subscribe to polar volumes from a 
+Polish radar called Pastewnik.
 \image html subscribe_list.png
 Check the "Select" box and then the "OK" button, you confirm, and that's
 it. You've subscribed.
@@ -50,11 +51,10 @@ overall list of subscriptions.
 
 \section sub_mnr Managing your subscriptions on remote nodes
 Once you have connected to a remote node and subscribed to data, you cannot
-resubscribe to the same data. Trying to do this will result in an error
-message. Instead, the way to cancel a subscription is to go to "Exchange"
---> "Subscriptions" and uncheck the box of the catalog entry you no longer
-want. That will result in your node telling the remote one to stop sending
-those data.
+resubscribe to the same data. In order to cancel a subscription, go to 
+"Exchange" --> "Subscriptions" and uncheck the box of the catalog entry you no 
+longer want. That will result in your node telling the remote one to stop 
+sending those data.
 
 If you accidently clear the database table containing your subscriptions to
 data from remote nodes, then you will have the unusual situation where you
@@ -72,8 +72,8 @@ the database table is reinstalled on a remote node that contained
 subscriptions to your node's data. In these circumstances, your node may be
 sending data to the remote node, and the remote node can't resubscribe
 because your node already has a record of that subscription. It is then
-advisable to go to "Settings" --> "Subscriptions" --> "Upload" and remove
-any "ghost" subscriptions.
+advisable to go to "Settings" --> "Subscriptions" --> "Remove uploads" 
+and remove any "ghost" subscriptions.
 
 If you haven't seen to it already, now would be a good time to \ref con_clean.
 

@@ -1,13 +1,13 @@
 /** \page secure Security in BALTRAD
-\date January 2012
-\version 1.0
+\date October 2013
+\version 1.1
 
 The BALTRAD system communicates with other nodes securely, and the
-web-based user interface is also secure, even though the URI prefix is
-"http" instead of "https". When the node is installed, security mechanisms
-are established that are fundamental for maintaining safe operations. This
-chapter is devited to explaining how it works and what steps you need to
-take.
+web-based user interface is also secure - sensitive data is encrypted before
+sending from the browser to server by means of HTTPS protocol.
+When the node is installed, security mechanisms are established that are 
+fundamental for maintaining safe operations. This chapter is devited to 
+explaining how it works and what steps you need to take.
 
 \li \ref sec_how
 \li \ref sec_in
@@ -38,12 +38,11 @@ a node from being spammed with messages from unknown sources.
 There are different user types in the system, each with its own
 privilages. These are presented below in \ref sec_usr.
 
-Encryption is currently not implemented in BALTRAD, although the signatures
-are encrypted in all messages. All passwords are also encrypted when you
-log into a BALTRAD node using the web-based interface. While some countries
-have officially banned the use of encryption, we will be addressing
-encryption in the BALTRAD+ project as an option for those who want or need
-it.
+Encryption is currently applied to communcication between local host (browser)
+and the server (BALTRAD node). To achieve this, HTTPS protocol is used with 
+SSL encryption. Note that for the sake of efficiency, only the sensitive parts 
+(usually forms with passwords and unique names) of user interface have been 
+secured with SSL.  
 
 \section sec_in Default key configuration
 When the BALTRAD node is installed, a so-called \a keystore is created
@@ -110,35 +109,39 @@ Remember to keep your private key (at /path/to/your/key) secret and safe!
 
 \section sec_ex Exchanging keys with other nodes
 In order to connect to another node, and subsequently subscribe to data
-from it, you must exchange public keys with that node. The process is
-manual for the time being, not automatic, although we are working on an
-automated procedure.
+from it, you must exchange public keys with that node. To achieve this, select
+"Connect" option from main menu's "Exchange" section. 
+Type in peer node's URL address in "Enter URL address section". Remember to 
+provide fully qualified address including port number as in the example 
+screenshot below.
 
-Assuming your keystore is located in the directory
-<tt>$prefix/etc/bltnode-keys</tt> directory, your public key is found
-in the subdirectory called \c $DEX_NODENAME.pub. That means if your node
-name is \c se.smhi.balthazar, then your public key will be found in the
-directory called \c se.smhi.balthazar.pub. There are two inside
-this subdirectory, one called \c "1" and the other called \c "meta". These
-two files are your public key.
+\image html key_exchange.png
 
-It is up to you to figure out the best way to communicate the contents of
-these two files to the node with which you want to connect. Do this in
-agreement with the administrator of the other node. Practices and policies
-will be different in different places, but the two most realistic methods
-are e-mail and the use of third-party certificate authorities.
+Next, send your public key to the peer node by clicking "Send key" button. 
+Assuming that peer node has successfully received the key, you will see the 
+following message box:
 
-If you decide transmit your public key electronically, which is a
-reasonable assumption, you can decide to pack it, e.g.
-\verbatim
-[bltnode-keys]$ tar cvzf se.smhi.balthazar.tgz se.smhi.balthazar.pub 
-\endverbatim
-Then transmit this file to the remote node's administrator. Upon safe
-reception, it is unpacked in the equivalent location:
-\verbatim
-[bltnode-keys]$ tar xvzf se.smhi.balthazar.tgz se.smhi.balthazar.pub
-\endverbatim
-You are now able to connect to the other node.
+\image html key_exchange_msg.png 
+
+Now, the recipient has to approve the key in order to allow its peer to make 
+connections to their node. It is done by selecting "Keystore" option from 
+the "Settings" section in the main menu. The option allows to access the 
+keystore and to grant or revoke access for the selected keys, as shown in the
+image below. 
+
+\image html key_exchange_keystore.png
+
+Note that the keys are named after the submitting nodes for clarity.
+In order to grant access for the key "baltrad.eu", click red icon located in 
+the "Access" column next to it. Once clicked, the icon will turn blue and 
+baltrad.eu will be able to connect to local node. In order to revoke access, 
+click the blue icon in "Access" column. Use "Delete" buttons in order to
+permanently remove the key. 
+
+\note
+Note that the same steps have to be taken by the peer node (that is the peer
+node has to submit its public key) in order to establish two-way communication.
+\endnote
 
 \section sec_usr Users types, their roles and privileges
 This section is not related to those above. There are different types of
@@ -159,6 +162,10 @@ includes data browsing, data preview, and system log inspection.</td></tr>
 <tr><td>peer</td> <td>This role is reserved for data exchange only. A peer
 accounts cannot be created locally, it is established automatically upon
 first successful connection from a remote node.</td></tr>
+<tr><td>node</td> <td>This role is not available for user accounts, although 
+it is used in communication between the nodes. The "node" account is 
+established during installation. The user account with role "node" always takes 
+its name from the node itself. </td></tr>
 </table>
 \endhtmlonly
 
@@ -167,22 +174,21 @@ This is the first step towards being able to exchange data. Once two nodes
 have exchanged public keys (see above), they will be allowed to connect to
 each other for the first time.
 
-In the web-based user interface, go to "Exchange" --> "Connect". In the
-"Define new connection" field, type the complete URI to the remote node,
-e.g. <tt>http://balthazar.smhi.se:8080/BaltradDex/dispatch.htm</tt> and
+In the web-based user interface, from the exchange section of the main menu,
+select "Connect" item. In the "Enter URL address" field, type the complete URI 
+to the remote node, e.g. <tt>http://balthazar.smhi.se:8080</tt> and
 then press the "Connect" button.
 
 This authentication-by-connection must have been done by both nodes
 before either of the nodes can subscribe to any data!
 
-You should be greeted by a simple page confirming that you have succeeded
-and that the next step is for the remote admin to enable you to subscribe
-to the data sources on that node:
-\verbatim
-Data source list is empty. Ask remote node's administrator to make data
-sources available for you.
-\endverbatim
-This was described in \ref con_ds. The
+You should be greeted by a simple page confirming that you have succeeded, as
+shown below.
+
+\image html connect.png
+
+The next step is for the remote admin to enable you to subscribe
+to the data sources on that node: This was described in \ref con_ds. The
 only difference is that the remote node's admin will "Edit" an existing
 data source by adding your peer user to it, if this data source doesn't
 already exist. Remember, \b don't subscribe to anything until both sides

@@ -289,8 +289,31 @@ If you built and installed your node with the \c --with-rave-gmap argument,
 then you already have the package installed. There are a few things
 you need to do manually before this service will work for you.
 
+
 \subsection pgf_gm_ap Configuring your web server
-Make sure your web server knows about this plugin. We have integrated
+
+First thing to do is preparing a file containing geographic area definitions 
+to use with the Google Maps plugin. To generate areas definition file, do the
+following:
+
+\verbatim
+%> cd $prefix/rave_gmap/web
+%> source $prefix/etc/bltnode.rc
+%> python ../Lib/GenerateProductInfo.py smhi-areas.xml
+\endverbatim
+
+\note
+The name of the file \c smhi-areas.xml might be a bit confusing, but it actually
+contains different product definitions.
+\endnote
+
+Assuming that all went fine, a file called \c products.js will be created in 
+<tt>$prefix/rave_gmap/web</tt> directory. It contains some area definitions we 
+have used while developing the system. They can be replaced with your new one,
+or your new one can be added - refer to \ref pgf_gm_gm section to learn how to 
+do that.
+
+Next, make sure your web server knows about this plugin. We have integrated
 against an Apache server, so the instruction is valid for it. At the bottom
 of your server's \c httpd.conf file, add the following entry. This is
 assuming that you've checked with your system administrator what want to do
@@ -309,27 +332,22 @@ root# service httpd restart
 
 \subsection pgf_gm_route Configuring a route in your node
 Define a route in the node for generating images for Google Maps. This is
-currently done by Groovy scripting, and there's a ready-made script
-for you for this purpose that comes along with the node installer. In the
-\c packages directory, you'll find the \c beast package and a subdirectory
-called \c examples. There you will find an example script named \c
-GenerateGmapPng.groovy. Start by using the web-based user interface to your
-node, and go to "Processing" --> "Routes" --> "Create script". Paste the
-Groovy script into the "Script" field and make sure the AREAS and PATH
-declarations are correct:
-\image html pgf_gmscript.png
+done by selecting "Routes" -> "Create Google Map" from the "Processing" section
+of the main menu. Remember to make sure that the "Area" and "Path" field values
+are correct:
+\image html pgf_gm.png
 As soon as you have saved this route, the plugin will generate a PNG image
 for Google Maps each time an input file for it is generated.
 
 \subsection pgf_gm_gm Configuring the plugin itself
 The final step is for you to configure the plugin itself, so that it
 contains a selectable product menu item that matches the product you're
-generating. In the <tt>$prefix/rave_gmap/web</tt> directory, there is a
-file named \c products.js that comes with some area definitions we have
-used while developing the system. They can be replaced with your new one,
-or your new one can be added. Continuing with our example from Vara, a
-corresponding entry for it makes use of the corner coordinates we
-determined earlier in \ref pgf_cp_area and the radar's location:
+generating. We will use \c products.js file that you've generated in 
+\ref pgf_gm_ap section. As was mentioned above, the file contains some default
+area definitions. They can be replaced with your new one, or new one can be 
+added. Continuing with our example from Vara, a corresponding entry for it makes 
+use of the corner coordinates we determined earlier in \ref pgf_cp_area and the 
+radar's location:
 \verbatim
 //Product sevar_gmaps, Vara 1 km
 radar_products['sevar_gmaps'] = new RadarProduct;
