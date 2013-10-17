@@ -80,7 +80,6 @@ triggered with a special prefix \c /_bdb:
 
 \note
 Name template takes absolute paths (e.g /what/object).
-
 If the name template is not specified, files will be named after the entry UUID.
 \endnote
 
@@ -88,9 +87,12 @@ The "Filter" is a generic ODIM filtering tool that allows you to define
 selection criteria based on metadata attributes in ODIM files. In our case we 
 have defined a fairly simple set of two criteria, the \c /what/source attribute 
 must contain the geographic area name. A full set of idntifiers is used here 
-in order to match files against filter: WMO, RAD, PLC and CMT. This ensures that 
-in case id any of these identifiers match the file's attribute, the file will
-be distributed.
+in order to match files against filter: WMO, RAD, PLC and CMT:
+\verbatim
+WMO:06194,RAD:DN44,PLC:Bornholm,CMT:dkbor
+\endverbatim
+This ensures that in case if any of these identifiers match the file's 
+/what/source attribute, the file will be distributed.
 The second selection criterion is that the \b /what/object attribute is PVOL, 
 ie. a polar colume. This filtering functionality assumes you are conversant with 
 <a href="http://www.knmi.nl/opera/opera3/OPERA_2008_03_WP2.1b_ODIM_H5_v2.1.pdf"
