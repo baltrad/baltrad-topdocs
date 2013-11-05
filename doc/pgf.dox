@@ -330,6 +330,40 @@ After this, restart your Apache server:
 root# service httpd restart
 \endverbatim
 
+\subsection pgf_gm_ap_alt Alternative web server configuration
+
+In case your system doesn't come with pre-installed apache server, or for some 
+reason you need a custom setup, you might want to install it manually. 
+Here are the steps necessary to install apache2 web server under Ubuntu 
+operating system.
+
+First, install the required packages:
+
+\verbatim
+sudo apt-get install apache2
+sudo apt-get install php5
+sudo apt-get install libapache2-mod-php5
+\endverbatim 
+
+Then point the server to the right \p DocumentRoot directory. In order 
+to achieve this, edit the following configuration file:
+
+\verbatim
+/etc/apache2/sites-available/default
+\endverbatim
+
+Set the \p DocumentRoot option so it points to your web data directory: 
+
+\verbatim
+DocumentRoot /opt/baltrad/rave_gmap/web
+\endverbatim
+
+Save the file and restart your web server:
+
+\verbatim 
+sudo service apache2 restart
+\endverbatim
+
 \subsection pgf_gm_route Configuring a route in your node
 Define a route in the node for generating images for Google Maps. This is
 done by selecting "Routes" -> "Create Google Map" from the "Processing" section
