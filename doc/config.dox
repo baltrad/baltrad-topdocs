@@ -24,7 +24,7 @@ pre-configured user called \c admin, and this user's password is
 'baltrad'. You have to log on using the web-based user interface and change
 it to something only you know. 
 
-From the main menu placed in the left column, click "User accounts" --> "Edit" 
+From the main menu placed in the left column, click "User accounts" --> "Edit user" 
 link (located in the "Settings" section). There you'll see the \c admin user 
 and a link to the right called "Change" under the heading "Password". 
 Use a safe password, and store it in a safe place that you remember.
