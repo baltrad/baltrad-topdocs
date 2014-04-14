@@ -364,6 +364,14 @@ Save the file and restart your web server:
 sudo service apache2 restart
 \endverbatim
 
+If you for example can not get the google map viewer to show the pictures you might
+have to configure so that index.php is found when browsing directories. There are a
+couple of locations where this setting can be placed. First, check in httd/conf.d/php.conf
+if there is an entry in that file reading 'DirectoryIndex index.php'. If not, you might
+have to modify the above described VirtualHost entry and add 'DirectoryIndex index.php'
+to the same. Save the file and restart your web server.
+
+
 \subsection pgf_gm_route Configuring a route in your node
 Define a route in the node for generating images for Google Maps. This is
 done by selecting "Routes" -> "Create Google Map" from the "Processing" section
