@@ -176,7 +176,7 @@ this projection to the toolbox's projections registry:
 \verbatim
 $ projection_registry --add --identifier=gmaps \
 --description="Google Maps" \
---definition="+proj=merc +lat_ts=0 +lon_0=0 +k=1.0 +R=6378137.0 +datum=WGS84 +no_defs"
+--definition="+proj=merc +lat_ts=0 +lon_0=0 +k=1.0 +R=6378137.0 +datum=WGS84 +nadgrids=@null +no_defs"
 \endverbatim
 You can then verify that this definition has been added to the registry by
 running
@@ -186,7 +186,7 @@ $ projection_registry --list
 and you should see the following entry:
 \verbatim
 gmaps -	Google Maps
-	+proj=merc +lat_ts=0 +lon_0=0 +k=1.0 +R=6378137.0 +datum=WGS84 +no_defs
+	+proj=merc +lat_ts=0 +lon_0=0 +k=1.0 +R=6378137.0 +datum=WGS84 +nadgrids=@null +no_defs
 \endverbatim
 Now that you have this projection, you can define areas using it.
 
