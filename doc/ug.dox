@@ -1,6 +1,6 @@
 /** \page ug User Guide
-\date October 2013
-\version 1.1
+\date December 2014
+\version 2.1
 
 Welcome to the BALTRAD User Guide. This documentation is designed
 to assist you with the most common tasks you undertake with BALTRAD
@@ -35,6 +35,8 @@ some necessary overall context.
 \ref pgf
 
 \ref dist
+
+\ref maintenance
 
 
  */

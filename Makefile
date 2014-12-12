@@ -8,11 +8,11 @@
 ################################################################################
 all:
 
-.PHONY=doc
+.PHONY: doc
 doc:
 	@doxygen doxygen.cfg
 
-.PHONY=clean
+.PHONY: clean
 clean:
 	@\rm -rf doxygen/*
 	@\rm -f doc/*~
@@ -21,7 +21,7 @@ clean:
 	@\rm -f images/*~
 	@\rm -f *~
 
-.PHONY=distclean
+.PHONY: distclean
 distclean:
 	@\rm -rf doxygen/*
 	@\rm -f doc/*~

@@ -1,8 +1,8 @@
 /** \mainpage Community-based weather radar networking
-\date October 2013
-\version 1.1
+\date December 2014
+\version 2.1
 \par Copyright 
-&copy; 2013 Swedish Meteorological and Hydrological Institute (SMHI), Norrk&ouml;ping, Sweden <br> on behalf of the BALTRAD partnership
+&copy; 2014 Swedish Meteorological and Hydrological Institute (SMHI), Norrk&ouml;ping, Sweden <br> on behalf of the BALTRAD partnership
 
 \par Legals
 BALTRAD is free software: you can redistribute it and/or modify
@@ -45,9 +45,17 @@ TAKE ME TO ...
 \htmlonly
 <table border="0">
 <tr>
-<td><img src="EU_logo.jpg"</td>
+<td>
+\endhtmlonly
+\image html EU_logo.jpg
+\htmlonly
+</td>
 <td><center>Part-financed by the European Union (European Regional Development Fund and European Neighbourhood and Partnership Instrument)</center></td>
-<td><a href="http://eu.baltic.net/" target="_blank"><img src="BSR-logo.png" /></a></td>
+<td><a href="http://eu.baltic.net/" target="_blank">
+\endhtmlonly
+\image html BSR-logo.png
+\htmlonly
+</a></td>
 </tr>
 </table>
 \endhtmlonly

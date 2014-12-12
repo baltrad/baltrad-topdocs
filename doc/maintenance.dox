@@ -1,0 +1,82 @@
+/** \page maintenance Maintenance
+\date December 2014
+\version 2.1
+
+There are so many different ways to maintain a computer system so we will just focus on some 
+specific parts related to the baltrad software. Other than that, you will have to refer to
+other documentation or your sysadmin for more tips and tricks.
+
+\section maintenance_database Database maintenance
+In a real time system like baltrad you will most likely have a heavy flow of data coming into
+the system, filling and fragmenting the database. In order to have a stable system you will have
+to configure and activate a number of these.
+
+\subsection maintenance_delivery_registry Delivery registry
+The delivery registry is the DEX's way of keeping track of the files that has arrived into the system. 
+To ensure that this registry does not grow out of control you will have to activate this feature.
+Navigate to "settings->Delivery registry->Configure" and you will see the following view.
+
+\image html delivery_registry.png
+
+You should select one of these options in order to keep the delivery registry under control. 
+
+\subsection maintenance_message_settings Message settings
+In the same way as for the delivery registry, the system messages must be kept down to a reasonable
+level. Navigate to "settings->Messages->Configure" and you will see the following view.
+
+\image html message_settings.png
+
+
+Now you have configured so that DEX does not grow out of control, time to take care of the baltrad db.
+
+\subsection maintenance_bdb_rules Baltrad DB rules
+
+It is even more important that baltrad-db is keept under control since all data is stored in the database.
+The baltrad db is handled by a couple of beast rules, "DB trim count" and "DB trim age" rule. The rules in them
+self are very easy. Either you configure so that the number of files are kept below a certain level (trim count)
+or all files older than x seconds (trim age).
+
+Below is an example on how the trim by count rule can look like with values set which can be found by navigating
+to "processing->Routes->Create DB trim count" 
+
+\image html trim_by_count.png
+
+The rules are not autmatically run, instead you have to configure the scheduler to execute the rule which can be
+found in "processing->Schedule" and then pressing Create. Depending on the load and number of incoming files you
+might have to run the scheduler often but this might cause consequences on your data processing like gra and acrr 
+if you don't allow at least a couple of days of data in the rule. If you want to configure the schedule so that it
+is run once an hour every day, then it will look like
+
+\image html trim_by_count_schedule.png
+
+\subsection maintenance_psql Postgresql database
+
+Usually this step is something that most admins have got a clear idea on how to do or there already are procedures
+to keep the postgresql database fresh. However, some pointers might come in handy when maintaining the database.
+
+The first thing to be aware of with the baltrad software is that there will be a lot of fragmentation of the database due
+to all the creation and deletion of data within the database. Since the files as default also is stored as large objects
+within the database, the fragmentation will be even worse. This can quite easilly be managed as long as you are aware of it.
+
+The first thing to do is to activate autovacuum in the postgres database. Locate the postgresql.conf file, usually it is
+placed in something like "/var/lib/pgsql/data/postgresql.conf" or "/etc/postgresql/.../postgresql.conf". Edit the file and
+locate the entry "#autovacuum = on" and remove the comment so that it is activated. Then restart the database.
+
+Unfortunately, this might not be enough to keep the database in shape so you will have to create a crontab job as well
+that performs another vacuum.
+
+As user postgres, create a script (e.g. /var/lib/pgsql/vacuum_cron.sh) that contains the following
+\verbatim
+#!/bin/sh
+psql baltrad <<EOF > /tmp/vacuum.txt 2>&1
+vacuum analyze verbose;
+EOF
+\endverbatim
+
+Then create a crontab job as user postgres that executes the above mentioned vacuum script. The below example is run 2 times a week.
+\verbatim
+0 23 * * 2,6 /var/lib/pgsql/vacuum_cron.sh
+\endverbatim
+
+
+ */
