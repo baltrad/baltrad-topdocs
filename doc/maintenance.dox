@@ -52,7 +52,7 @@ is run once an hour every day, then it will look like
 \subsection maintenance_psql Postgresql database
 
 Usually this step is something that most admins have got a clear idea on how to do or there already are procedures
-to keep the postgresql database fresh. However, some pointers might come in handy when maintaining the database.
+to keep the postgresql database in a good condition. However, some pointers might come in handy when maintaining the database.
 
 The first thing to be aware of with the baltrad software is that there will be a lot of fragmentation of the database due
 to all the creation and deletion of data within the database. Since the files as default also is stored as large objects
@@ -74,9 +74,59 @@ EOF
 \endverbatim
 
 Then create a crontab job as user postgres that executes the above mentioned vacuum script. The below example is run 2 times a week.
+
 \verbatim
 0 23 * * 2,6 /var/lib/pgsql/vacuum_cron.sh
 \endverbatim
 
+Now, we have taken care of the database so that it does not run out of control. This is unfortunately not enough in order to keep the server in good health.
+There are several log files that are created and if left as is will sooner or later fill the file system.
+
+\subsection maintenance_log_files Log files
+The application can produce a lot of debug or informative messages in the log files. These files can in turn become 
+very large so it might be a good idea to add a couple of log rotate rules to keep the log files in check.
+
+The first rule to create is the one keeping the catalina.out file under control, call it something like <b>/etc/logrotate.d/tomcat</b> 
+and add the following information in the configuration file.
+
+\verbatim
+/opt/baltrad/third_party/tomcat/logs/catalina.out {  
+  copytruncate  
+  daily  
+  rotate 7  
+  compress  
+  missingok  
+  size 5M  
+}
+\endverbatim
+
+You can also create a rule that ensures that the baltrad-bdb log file doesn't grow to large. Create a file called 
+<b>/etc/logrotate.d/baltradbdb</b> that contains.
+
+\verbatim
+/opt/baltrad/baltrad-db/baltrad-bdb-server.log {  
+  copytruncate  
+  daily  
+  rotate 7  
+  compress  
+  missingok  
+  size 5M  
+}
+\endverbatim
+
+Finally, you might also have to ensure that the rave's fm12 importer does not keep on growing even if it probably 
+will take quite some time until that file has grown so much that it will cause a problem. In the same way as was done
+for the two previous log files, create a configuration file in <b>/etc/logrotate.d</b> that contains.
+
+\verbatim
+/opt/baltrad/rave/etc/fm12_importer.log {  
+  copytruncate  
+  daily  
+  rotate 7  
+  compress  
+  missingok  
+  size 5M  
+}
+\endverbatim
 
  */
