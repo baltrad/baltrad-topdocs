@@ -104,5 +104,31 @@ Filter takes relative attribute paths (e.g. what/object).
 
 \image html distr_route.png
 
+\section distr_scp_route Some notes about the SCP distribution rule
+
+We are using sshj (https://github.com/hierynomus/sshj/downloads) to support file upload with scp and have noticed
+some things that might cause some head aches when reading the catalina.out log.
+You might see the following exception over and over again:
+
+\verbatim
+21 Dec 2014 14:18:05 WARN  net.schmizz.sshj.SSHClient - Could not load keys due to: {}
+java.io.FileNotFoundException: /home/baltrad/.ssh/id_dsa (No such file or directory)
+	at java.io.FileInputStream.open(Native Method)
+	at java.io.FileInputStream.<init>(FileInputStream.java:138)
+	at java.io.FileReader.<init>(FileReader.java:72)
+	at net.schmizz.sshj.userauth.keyprovider.KeyProviderUtil.detectKeyFileFormat(KeyProviderUtil.java:40)
+	at net.schmizz.sshj.SSHClient.loadKeys(SSHClient.java:478)
+\endverbatim
+
+This is really not any problem, it is just the SSHJ library saying that it couldn't find the .ssh/id_dsa file but it
+will keep on handling the file upload anyway. If you want to get rid of the exception from the log, you will just have
+to create the id_dsa file by typing:
+
+\verbatim
+%> ssh-keygen -t dsa
+\endverbatim
+
+and follow the instructions.
+
 */
  
