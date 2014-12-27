@@ -83,6 +83,70 @@ Name template takes absolute paths (e.g /what/object).
 If the name template is not specified, files will be named after the entry UUID.
 \endnote
 
+\section distr_namer Advanced naming functionality
+From version 2.1 of the node software we have started to introduce more advanced features when it
+comes to creating names in the distribution rules. For one, we have added more complex place holders
+that can provide names besides the information in the attributes. Secondly we have also added
+operations that can be applied on the place holder to give ability to modify the presentation.
+
+\subsection distr_namer_datetime Formattable date time placeholder
+The first namer we introduced was the possibility to specify your own date and time format from
+the what/date and what/time attributes. This attribute is defined as
+
+\li ${_beast/datetime:<format>} - where the format is the same as used by the SimpleDateTime format in java
+
+For example, if you want to specify a date as 2014-12-27 11:12 then you write <b>${_beast/datetime:yyyy-MM-dd HH:mm}</b>.
+
+In some examples you can also use this feature for creating subdirectories, currently this is only available for the
+copy:/// destination. An example for this would be <b>${_beast/datetime:yyyy/MM/dd/HH/mm}</b>. Hopefully we will be able
+to support this behaviour for both scp and ftp as well.
+ 
+\subsection distr_namer_hexcode Hex code placeholder for representing quantities
+Since an ODIM H5 file can contain several different quantities it might be interesting to see what
+quantities that exists in a file by just looking at the filename. For this reason we have created
+something we call a hexcode namer. The behaviour of this is that you will get a hex code bit mask
+that defines what quantities that exists in the file.
+
+If for example bit 1 is set for DBZH and bit 2 is set for TH and the file contains both DBZH and TH, then
+the result of this placeholder would be <b>0x3</b>. The definitions of these fields can be found in
+odim_quantities.xml which is located in <b>.../third_party/tomcat/webapps/BaltradDex/WEB-INF/classes/odim_quantities.xml</b>.
+Note, that this file also exists as a duplicate in <b>.../beast/etc/odim_quantities.xml</b> but this file 
+is not used in the node but it gives external applications the possibility to read the same information as is used
+in the tomcat app server.
+
+\li ${_beast/hexcode} - Creates a hex code string that identifies the quantities in a file
+
+\subsection distr_namer_suboperations Suboperations
+In node version 2.1 we also introduces something that we are calling suboperations. These operations gives the possibility
+to even more refine the names that the placeholders gives. In some cases you might want to capitalize letters, only
+extract parts of a name and so on.
+
+The suboperation is applied after the ending '}' for the placeholder, for example. ${what/source:CMT}.tolower().toupper(1) would
+ensure that only the first letter in the source would be capitalized. As you can see from example it is possible to chain the
+suboperations. Whenever a suboperation fails they will return the original string. E.g. "xyz".toupper(10) will result in "xyz"
+instead of null or some sort of exception.
+
+Currently, the following suboperations are supported
+
+\li toupper([beginIndex[,endIndex]) - sets the letters to uppercase. If only beginIndex is specified, it is only for
+that position. If both begin and end index are specified it applies to that range. If both are missing, then the whole
+string is changed to upper case.
+
+\li tolower([beginIndex[,endIndex]) - same behaviour as for toupper with the difference that the letters are changed
+to lower case.
+
+\li substring(beginIndex,endIndex) - Creates a substring between begin and end index
+
+\li substring(endIndex) - Creates a substring from start of string to endIndex. Same as specifying substring(0,endIndex).
+
+\li trim() - Trims both left and right side of the string from any white spaces.
+
+\li ltrim() - Trims the left side of the string from any white spaces.
+
+\li rtrim() - Trims the right side of the string from any white spaces.
+
+\section distr_filters Filter
+
 The "Filter" is a generic ODIM filtering tool that allows you to define 
 selection criteria based on metadata attributes in ODIM files. In our case we 
 have defined a fairly simple set of two criteria, the \c /what/source attribute 
