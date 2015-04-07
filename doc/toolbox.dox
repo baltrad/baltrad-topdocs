@@ -1,0 +1,256 @@
+/** \page toolbox How to get your tools into the BALTRAD toolbox
+\date January 2014
+\version 2.0
+
+This page contains a step-by-step tutorial on how to get your tools into
+the BALTRAD toolbox. It will focus on the Python Product Generation
+Framework (PGF) functionality available in the RAVE package described on the
+\ref pgf page.
+
+This tutoral builds on the functional name "hello"; this is the tool that
+we will integrate into the toolbox. "Hello" doesn't actually do anything
+very useful, and the same functionality actually already exists. However,
+it's intended to be a simple example that can serve as a template for
+integrating more useful functionality.
+
+\li \ref toolbox_dld
+\li \ref toolbox_C
+\li \ref toolbox_Cmake
+\li \ref toolbox_PyC
+\li \ref toolbox_PyCmake
+\li \ref toolbox_ut
+\li \ref toolbox_cmd
+\li \ref toolbox_qp
+\li \ref toolbox_pgf
+\li \ref toolbox_beast
+\li \ref toolbox_rec
+
+\section toolbox_dld Download the tutorial
+
+This first step is optional, but it contains a <a href="hello/hello.tgz">ready-made package</a>
+containing all the code, build directives, and other useful things that can
+be installed on top of an existing RAVE. While this may be convenient to
+do, it is advisable not to; instead unpack the tarball seperately and refer
+to it.
+
+\section toolbox_C C code
+
+The "hello" code base exists as a C file (<a href="hello/hello.c">hello.c</a>)
+with associated header  (<a href="hello/hello.h">hello.h</a>).
+
+The location of these files is important. If the functionality 
+can be considered part of the core toolbox, then it can be placed in
+the <em>librave/toolbox</em> directory. Otherwise, it's advisable to put
+such code in a separate directory under <em>librave</em>, as has been done
+for the <em>scansun</em> and <em>radvol</em> code.
+
+The functionality takes an I/O container object and queries its contents,
+checking whether it is a scan, a polar volume, an image, or a vertical
+profile. It also writes a new metadata attribute to the top-level 'how'
+group containing a simple greeting. All this is done using the toolbox APIs.
+
+\section toolbox_Cmake C build directives
+
+The <em>Makefile</em> for the C code must be modified to build the "hello"
+code. Edit the existing <em>Makefile</em> or use it as a template.
+
+add hello.c to $RAVESOURCES
+
+add hello.h to $INSTALL_HEADERS
+
+\section toolbox_PyC Write a Python C wrapper
+
+This task may seem daunting at first, but it's pretty
+straight-forward. Most of the code is boiler-plate, so wrappers can be
+recycled and used as templates a lot of the time. In the <em>modules</em>
+directory, create a wrapper called <a href="hello/pyhello.c">pyhello.c</a>. In contrast to the separation
+between core functionality and other functionality, all the wrappers are located in this <em>modules</em> directory.
+
+The function containing the wrapper itself is
+  called <em>_hello_func</em>. You can see how the function maps the
+  input object from Python to C, calls the "hello" function in the C code, and
+  then returns the result back to Python.
+
+\section toolbox_PyCmake Wrapper build directives
+
+Similarly with the pure C code above in \ref toolbox_Cmake, the wrapper
+  must be built as well. Wrappers are numbered. In this tutorial, the
+  number used for "hello" is 35. As the toolbox continues to develop, this
+  number will be used by another module, so using a higher number will be
+  required for "hello".
+
+add SOURCE_35, OBJECTS_35, TARGET_35
+
+Above ".PHONY=install", add an entry for \$(TARGET_35)
+
+Last line, add: -include $(SOURCE_35:%.c=$(DEPDIR)/%.P)
+
+After these additions, you can now build and install the C code and its
+Python wrapper.
+
+\section toolbox_ut Write unit tests
+
+This step shoudn't be forgotten, because it provides a safeguard for the
+functionality you are contributing. If the code base is altered in a way
+that breaks your tool, then it should result in failed tests that will
+alert you.
+
+As with the Python wrappers, all the unit tests are located
+in the <em>test/pytest</em> directory. They are written in Python. We will
+contribute a module called <a href="hello/PyHelloTest.py">PyHelloTest.py</a> that
+contains two unit tests.
+
+The first test <em>testHello</em> reads a polar volume file and determines
+that it is, indeed, a polar volume. The second test <em>testGoodbye</em>
+reads an improperly encoded vertical profile file and determines that it
+is, indeed, unrecognizable as a vertical profile.
+
+Import this unit test module into <em>test/pytest/RaveTestSuite.py</em>:
+
+\verbatim
+from PyHelloTest import *
+\endverbatim
+
+Run the tests from the top directory where you are building RAVE:
+
+\verbatim
+$ make test
+\endverbatim
+
+This should result in a message at the end stating
+
+\verbatim
+Ran XXX tests in X.---s
+
+OK
+\endverbatim
+
+\section toolbox_cmd Write a command-line tool
+
+Because the "hello" functionality already exists in the toolbox, it's a
+piece of cake to make it available on the command line. In the <em>bin</em>
+directory, add a Python script called <a href="hello/hello">hello</a> and make it
+executable with "chmod".
+
+This command-line tool consists of two parts:
+
+\li Parsing command-line options. This is done using standard Python
+  functionality in the OptionParser module. 
+\li Running a "hello" function that accesses the C code through the Python
+  wrapper.
+
+After the "binary" has been written, don't forget to add it to the
+  "install:" directive in <em>bin/Makefile</em>.
+
+\section toolbox_qp Create quality plugin
+
+The toolbox contains functionality for managing data processing algorithms
+  at a high level of abstraction. These building blocks are referred to as
+  "quality plugins". By registering plugins, they can be chained in memory
+  automatically.
+
+The plugin is found
+  in <a href="hello/rave_hello_quality_plugin.py">Lib/rave_hello_quality_plugin.py</a>. In
+  addition to the constructor, it contains a name defined in
+  the <em>getQualityfields</em> method. This name follows a convention that
+  is Java-like and represents the hierarchical origin of the algorithm that
+  can be used to identify it. This name should written to an output
+  file's <tt>how/task</tt> attribute, but it is the responsibility of each
+  tool to ensure this.
+
+The registry itself is located
+  in <em>etc/rave_pgf_quality_registry.xml</em>. The following entry should
+  be added:
+
+<tt>
+<quality-plugin name="hello" module="rave_hello_quality_plugin" class="hello_plugin"/></tt>
+
+Once this "hello" quality plugin has been registered, it can be verified
+using the <em>odc_toolbox</em> tool on the command-line. Assuming the bRopo
+and beamb packages have also been installed, you can set up the following:
+
+\li Create two directories call "in" and "out".
+\li Place an ODIM_H5 file in the "in" directory.
+\li Run: <tt>odc_toolbox -i in -o out -q 'ropo,radvol-att,beamb,hello'</tt>
+
+Then check the output file in the "out" directory, e.g. using HDFView or
+h5dump. It should be larger and contain quality indicator fields from the
+various quality controls, including the greeting created by "hello".
+
+\section toolbox_pgf Create a PGF plugin
+
+In contrast to the quality plugins, PGF plugins are used by a BALTRAD node
+running in real time as part of the PGF server operating as a daemon. This
+server received XML-RPC messages containing information on which tool to
+run among other things. It must therefore have a mechanism for looking up
+these tools. This is the purpose of this kind of plugin.
+
+In the case of "hello", its PGF plugin is found
+in <a href="hello/rave_pgf_hello_plugin.py">Lib/rave_pgf_hello_plugin.py</a>.
+This plugin, like all PGF plugins, must have a function called
+<tt>generate</tt> that takes two manadatory arguments: <tt>files</tt> and
+<tt>arguments</tt>. More information is available in the 
+<a href="http://git.baltrad.eu/manual/rave/rave_pgf.html">PGF server documentation</a>.
+
+Register the plugin:
+
+\verbatim
+$ pgf_registry -a -H http://localhost:8085/RAVE --name=eu.baltrad.beast.hello -m rave_pgf_hello_plugin -f generate -d 'Hello tutorial'
+\endverbatim
+
+Verify:
+
+\verbatim
+$ pgf_registry -l -H http://localhost:8085/RAVE
+\endverbatim
+
+Test:
+
+This test will actually use a simple client that will connect to your PGF
+server and tell it to run the "hello" PGF plugin on it. The client is 
+<a href="hello/hello_pgf">hello_pgf</a>.
+
+First, start your PGF server if it isn't already running:
+
+\verbatim
+$ rave_pgf start
+\endverbatim
+
+Then using an input ODIM_H5 file, e.g. pvol.h5:
+
+\verbatim
+$ hello_pgf pvol.h5
+\endverbatim
+
+\section toolbox_beast Integrate with Beast and BALTRAD node
+
+This integration is only required if you are running a toolbox as part of a
+real-time BALTRAD node, or plan to. Prototyping a new <em>Route</em> is
+done in the Beast sub-system of a BALTRAD node, using Groovy
+scripting. This can be done rather quickly. Creating a proper graphical
+user interface for the route takes longer, but should be done once the
+scripted route has been verified to function as expected. This tutorial
+will only cover the <a href="http://git.baltrad.eu/manual/beast/doc/doxygen/p_groovyrules.html">scripted Groovy routes.</a>
+
+<a href="hello/Hello.groovy">Hello.groovy</a> has been created for this
+tutorial. To activate it, in your node's user interface, create a new
+scipted route through the "Routes" --> "Create script" menu and paste the 
+script text into the script field. Don't forget to click on the RAVE
+<em>Recipient</em>. When the route has been configured, press the "Add"
+button and the route will trigger jobs automatically in real time. In this
+case, the triggering criterion is the presence of a polar scan or volume
+from Swedish radars &Auml;ngelholm and Arlanda.
+
+\image html create_script.png
+
+\section toolbox_rec Final recommendations
+
+<em>librave/toolbox</em> contains mostly infrastructure; please keep it
+that way.
+
+Add your tools in one of the following ways:
+
+\li As a separate directory under <em>librave</em>, like e.g. radvol.
+\li As a separate package that uses RAVE as a dependency, e.g. bRopo.
+
+*/

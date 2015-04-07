@@ -11,7 +11,8 @@ all:
 .PHONY: doc
 doc:
 	@doxygen doxygen.cfg
-
+	@tar -xvzf stuff/hello.tgz -C doxygen/html
+	
 .PHONY: clean
 clean:
 	@\rm -rf doxygen/*
