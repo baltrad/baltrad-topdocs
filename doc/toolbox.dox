@@ -1,6 +1,6 @@
 /** \page toolbox How to get your tools into the BALTRAD toolbox
-\date January 2014
-\version 2.0
+\date December 2015
+\version 2.2
 
 This page contains a step-by-step tutorial on how to get your tools into
 the BALTRAD toolbox. It will focus on the Python Product Generation

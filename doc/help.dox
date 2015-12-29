@@ -1,6 +1,6 @@
 /** \page help Getting post-installation help
-\date December 2014
-\version 2.1
+\date December 2015
+\version 2.2
 
 The various subsystems' built-in documentation will be generated
 automatically during \ref install. This is detailed technical documentation

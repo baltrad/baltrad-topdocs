@@ -1,6 +1,6 @@
 /** \page faq Frequently Asked Questions
-\date December 2014
-\version 2.1
+\date December 2015
+\version 2.2
 
 \htmlonly<hr>\endhtmlonly
 
@@ -741,7 +741,7 @@ convert from other formats.
 When data have been converted to ODIM_H5, the next step is to \a inject them
 into your node. This can be done in two ways:
 \li Use the OdimH5 package in injection mode (Java),
-\li Use the n2b daemon in the RAVE package (Python).
+\li Use the odim_injector daemon in the RAVE package (Python).
 
 With either injector, the injection process involves secure handshaking
 with the node in the same way as when data are exchanged between nodes.

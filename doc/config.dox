@@ -1,6 +1,6 @@
 /** \page config Configuration
-\date December 2014
-\version 2.1
+\date December 2015
+\version 2.2
 
 Congratulations! If you've come this far, it means you've succesfully
 followed the instructions in \ref install and you have a node that is up and
@@ -156,16 +156,16 @@ command line to process individual files, or you can use it as a daemon to
 monitor an input directory and process the files that are put there. Please see
 the OdimH5 documentation on how to install, configure, and use it.
 
-\li The \b n2b injector in the RAVE package. You'll find it in RAVE's 'bin'
+\li The \b odim_injector in the RAVE package. You'll find it in RAVE's 'bin'
 directory. Note that you don't need your node's whole software
 installation, just the RAVE package and RAVEs dependencies like hlhdf and 
 pyinotify. Run
 \verbatim
-$ n2b --help
+$ odim_injector --help
 \endverbatim
 to see what options you have.
 
-\b n2b is based on the file based inotify which means that it will react
+\b odim_injector is based on the file based inotify which means that it will react
 each time a file is placed in a specific directory. This means that each
 time a file is placed in the specified directory, an atempt will be made
 to inject the file into the dex node by using the rave baltrad injector.

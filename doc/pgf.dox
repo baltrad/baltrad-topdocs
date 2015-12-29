@@ -1,6 +1,6 @@
 /** \page pgf Processing data
-\date December 2014
-\version 2.1
+\date December 2015
+\version 2.2
 
 Your node should now be receiving data from your own radar(s), and
 exchanging data safely and smoothly with other nodes. This is where you can
@@ -116,8 +116,34 @@ Define a quality control by going to "Processing" --> "Quality controls"
 and pressing the "Create" button, e.g. for the bRopo package:
 \image html pgf_cqc.png
 This is a little tricker than it first seems, because the PGF must
-recognize the "Name" that you have entered. Currently the only such names
-are "ropo" and "beamb".
+recognize the "Name" that you have entered. There are several quality controls
+available and might differ depending on what product generator that is used and 
+what components that has been installed.
+
+At the time of this documents writing, the following quality controls are available:
+
+- beamb
+- ropo
+- rave-overshooting
+- distance
+- radvol-att
+- radvol-broad
+- radvol-speck
+- radvol-spike
+- hac-increment
+- hac-filter
+- qi-total
+- dealias
+- zdiff
+- scansun
+
+However, from release 2.2 you are also able to import the available quality controls
+from the registered product generators if the PGF has implemented support for returning
+the available quality controls.
+
+You can reach this by going to "Processing" --> "Quality controls" and press the "Import" button.
+
+\image html pgf_cq_import.png
 
 \section pgf_vol Generating a volume from polar scans
 This is where we actually start doing something with data. The \b Route
@@ -147,7 +173,9 @@ reached, then the volume will be created with those scans that have been
 received.
 
 Quality control can be combined in the volume route, by selecting them when
-configuring the route. 
+configuring the route. It is important to remember that the quality controls
+will be performed in the order they are selected in the selection list. Use
+the up and down arrows to arrange them properly.
 
 Note that the routes never buffer data in memory, they only keep track of
 the whereabouts of the input data files through the metadata that was mined
@@ -273,9 +301,43 @@ our example. This is done through the web-based user interface, by going to
 Note that the "Product parameter" is modelled after the same metadata
 attribute in ODIM.
 
+When selecting areas you can get a list of areas from the available PGFs by
+double clicking in the text field provided that the PGFs are able to return
+available areas.
+
+Prodpar is not used in the composite route as a selection filter. It only provides
+the PGF with a value to use during the product generation. That means that there is
+a limitation on the PPI method, only the lowest elevation will be used as a selection 
+criteria if SCAN-based selection has been chosen.
+
+The observant reader will probably recognize that the PVOL route above also
+was registered to execute ropo, beamb and qi-total as quality controls. RAVE
+is able to detect that a specific quality control already has been executed so
+if RAVE is the intended target, the quality control will not be rerun if the
+specified quality controls already has been executed.
+
+You are able to perform additional stuff on the generated products, for example
+Gauge Radar Adjustment (GRA) which you can read more about in another section.
+
+QI-total field is a somewhat different way of determining the composite. If specifying
+a class, then the radars used in the composite will be based on best quality. If using
+the default qi-total quality control, the name of the class to use is \b pl.imgw.quality.qi_total.
+
 With this example, we have shown how single-site Cartesian products are
 generates as "Composites". This may seem a little counter-intuitive, but it
 works. Everything's a composite ...
+
+\section pgf_site2d Site 2D products
+If you want to generate single site cartesian products you can use the Site 2D route
+instead. It almost works like the composite route with a couple of exceptions. 
+
+First, it triggers immediately when a source arrives matching the source-name and the prodpar. This
+means that when specifying PPI, prodpar and SCAN-based. The exact angle as specified in prodpar will
+be used.
+
+Secondly, you can specify a Pcs ID and x-/y-scale instead of area and then a best-fit will be done.
+
+\image html pgf_site2d.png
 
 \section pgf_gm Displaying Cartesian products using the Google Maps Plugin
 We now have our node generating products in real time, so we might be
@@ -288,7 +350,6 @@ easy to take a closer look at Google Maps.
 If you built and installed your node with the \c --with-rave-gmap argument,
 then you already have the package installed. There are a few things
 you need to do manually before this service will work for you.
-
 
 \subsection pgf_gm_ap Configuring your web server
 
@@ -411,11 +472,152 @@ machine. Voil&agrave;!
 
 Note that there are currently no routines for determining the maximum size
 of the disk space or age of the files used for storing PNG images. It's up
-to you to deal with this. We'll probably come up with a good solution in
-BALTRAD+.
+to you to deal with this.
 
 If you are interested in displaying images similarly using Web Map
 Services, check out the BALTRAD WMS package.
+
+\section pgf_acrr Generating Accumulated rain rate (ACRR) products
+The accumulation of rain rate products is done somewhat different than
+the routes explained previously. Instead of files triggering the job, the
+job is triggered by a scheduler. So besides creating the route you will
+have to add a scheduled job.
+
+There are a number of things that the user has to be aware of when creating
+the ACRR rule. 
+
+- Object Type can be either IMAGE or COMP. This is the object type of the composites
+that should be used in the accumulation. As a rule it should be COMP but you can
+watch the system message log for the object type when a file you are interested in arrives.
+- The quantity of the product parameter to use in the accumulation. Most likely DBZH or TH.
+- Hours specifies the number of hours the accumulation should cover.
+- Files per hour is used to determine the number of files and the interval of the files used
+in the accumulation. If specifying 4 files per hour. The interval will be 15 minutes, i.e.
+00, 15, 30 and 45.
+- Acceptable loss is specified in percent (0-100) and describes how large loss that is accepted
+before the accumulation is ignored.
+
+\image html pgf_acrr.png 
+
+After you have setup the ACRR route. It is time to setup the schedule. The easiest way to do this is
+to use the provided scheduler in the user interface.
+
+\image html pgf_scheduler_acrr.png
+
+Note, that if you specify for example 1 hour, it might be a good idea to setup the scheduler to
+be run every hour but a couple of minutes after the nominal time. For example 00:02, 01:02 and
+so forth so that the composites are available.
+
+If you for some reason want to use an external scheduler like crontab, you can create
+a small python script that invokes the ACRR route by using the injector functionality.
+
+\verbatim
+import BaltradFrame
+
+if __name__ == "__main__":
+  msg = """
+<blttriggerjob>
+  <id>999</id>
+  <name>ACRR</name>
+  <arguments></arguments>
+</blttriggerjob>
+"""
+  BaltradFrame.send_message(msg, "http://localhost:8080/BaltradDex")
+\endverbatim
+
+The ID is just for traceability so this can be whatever. The name is the name of the route. 
+\b NOTE: Most of the routes does not support triggering.
+
+\section pgf_gra Gauge Radar Adjustment (GRA)
+The Gauge Radar Adjustment (GRA) is used for generating adjustment coefficients that can be
+applied in different algorithms like compositing and acrr.
+
+In order to be meaningful, SYNOP-data has to be available. In the case of the rave PGF we
+have added support for handling observations in the FM12-format. If you have a different
+format, then you can write your own handler importing the observations into the database.
+The table containing the observations is named \b rave_observation and can be accessed
+by using the rave dom object \b rave_dom_db.rave_observation.
+
+\subsection rave_pgf_fm12 Importing FM12 observations
+If you want to try to use the functionality provided by rave to import the synop data in FM12 format
+you will be using the fm12_importer script in the rave bin folder. But first, you need to get the
+fm12 messages somehow. One alternative is to subscribe them from GISC. The fm12_importer is using
+inotify for monitoring one folder so the fm12 messages should be placed in that folder. 
+
+Before you start the fm12_importer daemon you will also have to setup information about
+the stations that are delivered in the fm12 messages. This can be done by importing a flatfile
+containing all stations. You can find the flatfiles and other useful information here
+http://www.wmo.int/pages/prog/www/ois/volume-a/vola-home.htm.
+
+Download the most recent file and import it with the following command
+\verbatim
+%> python bin/wmo_station --uri=postgresql://<dbuser>:<dbpwd>@<dbhost>/<dbname> --flatfile=<flatfile> import
+\endverbatim
+
+When that has been done, it's just to start the fm12 importer daemon.  
+
+\verbatim
+%> /opt/baltrad/rave/bin/fm12_importer --monitored=/gisc/fm12 --pidfile=/opt/baltrad/rave/etc/fm12_importer.pid 
+  --logfile=/opt/baltrad/rave/etc/fm12_importer.log --catchup --janitor daemon
+\endverbatim
+
+As you can see, the command is quite self-explanatory. A couple of notes might be in order though.
+
+- --catchup is used at startup to process all files that already exists in the monitored folder
+- --janitor is used to remove all files that has been processed otherwise they will be left as is even after they
+have been processed
+- daemon just says that the process should be started as a daemon.
+
+\subscection rave_pgf_gra Creating the GRA route
+The GRA route is very similar to the ACRR route in both how it behaves and
+that it is triggered by a scheduler.
+
+The distance field is very important and the composites has to have been generated with
+a distance-quality control. If you are using the distance anomaly detector that is provided
+by rave, the distance field should be named eu.baltrad.composite.quality.distance.radar.
+
+First term UTC is used to define when the accumulation period should start. For example, if
+First term UTC is 6 and interval is 12, the periods will be 0600-1800, 1800-0600 and so on.
+Since the synops might arrive later than for example 0600, we have scheduled the coefficients
+to be run one hour later, i.e. at 0700 and 1900.
+
+If you are using the Rave PGF you should be aware that the coefficients can be generated for 
+any area but they will be the same for all GRA adjustments. Hence, just have one GRA route 
+that uses a decently sized area.
+
+\b NOTE: It is not relevant to specify a too small interval, a good interval is probably
+12 hours. That also correlates with the 12-hour synop.
+
+\image html rave_pgf_gra.png
+
+When you have setup and scheduled the GRA route to be executed the gra-coefficients will
+be generated. Since the number of radar-gauge observations will be quite small at any
+given time we are using a merge period of a number of terms. This can be defined in the
+variable MERGETERMS in rave/Lib/rave_defines.py. The current value assumes a 12-hour
+interval and 20 terms giving a 10 day period for calculating the gra coefficients.  
+
+\section pgf_wrwp Weather Radar Wind Profiles (WRWP)
+The route for generating wind profiles is quite simple. It is triggered on volumes
+for the specified sources. When a polar volume for that source arrives the PGF is
+notified and then a vertical profile is generated and injected back into the
+system.
+
+The interval in this case is specifying how meters each section should be up to the
+maximum height. So in the case of max height = 12000 and interval = 200 the number
+of sections will be 60.
+
+\image html pgf_wrwp.png 
+
+\section pgf_scansun Scanning a polar volume for sun hits
+We have added a route for scanning polar volumes for sun hits. The result of
+this route beeing triggered is that a log file with hits will be created for
+each radar source.
+
+You can find the resulting files in <install prefix>/rave/etc/scansun/.
+
+\image html pgf_scansun.png 
+
+
 
 \section pgf_cl Processing data on the command line
 Some of the tools in the toolbox are available on the command line, which
@@ -436,7 +638,15 @@ An example from a Dutch radar should give e.g.
 This tool is prepared for monitoring sun "hits" assuming your input data
 are in ODIM_H5 version 2.1 with the required metadata.
 
-A more advanced tool is in the bRopo package for detection and removal of
+Then, there are another tool called \b radarcomp. This is used for generating composites
+from scans and volumes. It allows the user to specify what quality controls that should
+be performed. If the composite should be performed with multiprocessing enabled and so
+on. For all options type
+\verbatim
+%> radarcomp --help
+\endverbatim
+
+The bRopo package provides a tool for detection and removal of
 non-precipitation echoes ("anomalies"). A "lazy" use of it, where all input
 arguments and values are looked up from a file containing them is:
 \verbatim
