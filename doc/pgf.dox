@@ -617,7 +617,156 @@ You can find the resulting files in <install prefix>/rave/etc/scansun/.
 
 \image html pgf_scansun.png 
 
+\section pgf_groovy_scripts When you are missing a must have route
+In some cases, the routes we have predefined are not enough for whatever reason.
+They might not be flexible enough, not able to trigger on what you want or you
+might want to create a scheduled composite. In all these cases there is a solution
+but it will require some work from your side.
 
+There is a route called \b Create \b script that is used for adding your custom rules
+written as groovy scripts. You can read more about how you can write a groovy
+script in the manuals describing the BEAST API.
+
+As an example, we recently got a question if we are able to support composite generation
+that includes files within a specific time span ignoring the nominal time and sure we do,
+here you have an example that you can adjust according to your needs. Since this is a
+type of route that is not practical to trigger on incoming data it should be scheduled.
+
+When you have modified it for your needs it's just to copy-paste it into the text area
+in a script route.
+
+\verbatim
+package eu.baltrad.scripts
+
+import eu.baltrad.beast.rules.IScriptableRule;
+import eu.baltrad.beast.message.IBltMessage
+import eu.baltrad.beast.message.mo.BltGenerateMessage;
+import eu.baltrad.beast.message.mo.BltTriggerJobMessage
+import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
+
+import eu.baltrad.bdb.db.FileEntry;
+import eu.baltrad.bdb.db.FileQuery
+import eu.baltrad.bdb.db.FileResult;
+import eu.baltrad.bdb.expr.Expression;
+import eu.baltrad.bdb.expr.ExpressionFactory
+import eu.baltrad.bdb.oh5.Metadata;
+import eu.baltrad.bdb.util.DateTime
+import eu.baltrad.bdb.util.Date
+import eu.baltrad.bdb.util.Time
+import eu.baltrad.bdb.util.TimeDelta
+import eu.baltrad.beast.ManagerContext
+import eu.baltrad.beast.db.Catalog
+import eu.baltrad.bdb.FileCatalog;
+import eu.baltrad.bdb.db.Database;
+
+class ScheduledComposite implements IScriptableRule {
+	private static String AREA="swegmaps_2000";
+	private static String[] SOURCES=["seang","searl","selul","sekkr"];
+	private static String SELECTION = "NEAREST_RADAR"; // NEAREST_RADAR or HEIGHT_ABOVE_SEALEVEL
+	private static String QC = "ropo,beamb";
+	private static String METHOD = "ppi"; // ppi, cappi, pcappi, pmax or max
+	private static String PRODPAR = "0.5";
+	private static String QUANTITY = "DBZH";
+	
+	private static Logger logger = LogManager.getLogger(Ireland5MinuteComposite.class);
+	
+	ExpressionFactory xpr; 
+	List sources = new ArrayList();
+	Expression dateTimeAttribute;
+	Formatter formatter;
+	
+	Ireland5MinuteComposite() {
+		xpr = new ExpressionFactory();
+		formatter = new Formatter();
+		dateTimeAttribute = xpr.combinedDateTime("what/date", "what/time");
+		for (String src : SOURCES) {
+			sources.add(xpr.literal(src))
+		}
+	}
+	
+	@Override
+	public IBltMessage handle(IBltMessage message) {
+		if (message instanceof BltTriggerJobMessage) {
+			logger.info("Handling scheduled composite job");
+			return doHandle();
+		}
+		return null;
+	}
+	
+	protected IBltMessage doHandle() {
+		DateTime now = getNow();
+		ArrayList<Expression> filters = new ArrayList<Expression>();
+		filters.add(xpr.eq(xpr.attribute("what/object"), xpr.literal("PVOL")));
+		filters.add(xpr.eq(xpr.attribute("what/quantity"), xpr.literal("DBZH")))
+		filters.add(xpr.in(xpr.attribute("_bdb/source_name"), xpr.list(sources)))
+		filters.add(xpr.ge(dateTimeAttribute, xpr.literal(getStartFromNow(now))))
+		filters.add(xpr.le(dateTimeAttribute, xpr.literal(getEndFromNow(now))))
+		
+		FileQuery query = new FileQuery();
+		query.setFilter(xpr.and(filters));
+		
+		ArrayList<String> files = new ArrayList<String>();
+		FileResult set = null;
+		try {
+			set = ManagerContext.getCatalog().getCatalog().getDatabase().execute(query);
+			while (set.next()) {
+				FileEntry fEntry = set.getFileEntry();
+				Metadata metadata = fEntry.getMetadata();
+				logger.info("Adding file: " + metadata.getWhatObject() + " " + metadata.getWhatDate() + " " + metadata.getWhatTime() + " " + metadata.getWhatSource());
+				files.add(fEntry.getUuid());
+			}
+		} catch (RuntimeException t) {
+			t.printStackTrace();
+		} finally {
+			if (set != null) {
+			    set.close();
+			}
+		}
+		
+		BltGenerateMessage result = new BltGenerateMessage();
+		result.setAlgorithm("eu.baltrad.beast.GenerateComposite");
+		result.setFiles(files as String[]); 
+		DateTime nominalTime = ManagerContext.getUtilities().createNominalTime(now, 5);
+		Date date = nominalTime.getDate();
+		Time time = nominalTime.getTime();
+		result.setArguments([
+			"--area="+AREA, 
+			"--date="+new Formatter().format("%d%02d%02d",date.year(), date.month(), date.day()).toString(), 
+			"--time="+new Formatter().format("%02d%02d%02d",time.hour(), time.minute(), time.second()).toString(),
+			"--selection="+SELECTION,
+			"--anomaly-qc=" + QC,
+			"--method=" + METHOD,
+			"--prodpar=" + PRODPAR,
+			//"--applygra=true",
+			//"--zrA=200.0",
+			//"--zrb=1.6",
+			"--ignore-malfunc=true",
+			//"--ctfilter=True",
+			//"--qitotal_field=pl.imgw.quality.qi_total",
+			"--quantity=" + QUANTITY
+			] as String[])
+		
+		for (String s : result.getArguments()) {
+			logger.info("Argument = " + s);
+		}
+		
+		return result;
+	}
+	
+	protected DateTime getNow() {
+		return DateTime.utcNow();
+    }
+
+	protected DateTime getStartFromNow(DateTime dt) {
+		return dt.add(new TimeDelta().addSeconds(-(7*60)));
+	}
+	
+	protected DateTime getEndFromNow(DateTime dt) {
+		return dt.add(new TimeDelta().addSeconds(-10));
+	}
+}
+\endverbatim
 
 \section pgf_cl Processing data on the command line
 Some of the tools in the toolbox are available on the command line, which
