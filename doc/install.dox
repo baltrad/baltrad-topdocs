@@ -1,10 +1,9 @@
 /** \page install Installation
-\date December 2015
-\version 2.2
+\date May 2019
+\version 3.0
 
 Welcome to the installation chapter of the user guide. BALTRAD software has
-been built and installed in seven countries already, and at least three
-more are doing it soon. If it works for us, it can work for you.
+been built and installed in several countries. If it works for us, it can work for you.
 
 The golden rule when it comes to installation in BALTRAD is that
 instructions should always be provided in a text file called INSTALL. This
@@ -20,8 +19,10 @@ subsystems. If you want to install any of these individual subsystems
 alone, please consult that package's INSTALL file.
 
 \li \ref in_prep
-\li \ref in_repo
 \li \ref in_ps
+\li \ref in_rpm
+\li \ref in_prep_node_installer
+\li \ref in_repo
 \li \ref in_in
 \li \ref in_fw
 \li \ref in_up
@@ -32,7 +33,106 @@ Double-check \ref req_sw to make sure you have installed a 64-bit
 Linux. Make sure all the required software is installed and at least the
 versions given in the table.
 
-The software installation process will make heavy use of Python to fetch
+There are two different ways to install the software. Either by using the
+pre-built rpms that are available at http://git.baltrad.eu/baltrad-packages/CentOS/7/5/ or
+else by using the node-installer. The installation from rpm is the recommended approach
+but obviously this isn't possible in all situations and then the node installer
+is there to help out.
+
+The node-installer tries to provide a generic way to install the software on most
+linux distributions. The rpms on the other hand make the installation process simple
+and is also provided as a yum-repository.
+
+\section in_ps Preparing a database
+We use a Postgre SQL server. It doesn't have to be physically located on
+the same machine that you're using to install your BALTRAD node. Start by
+checking how secure your Postgre server is. Optionally you can raise its
+security level a bit by editing the
+<tt>/var/lib/pgsql/data/pg_hba.conf</tt> file. Towards the bottom, the
+entries should appear as here:
+\verbatim
+# TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
+
+# "local" is for Unix domain socket connections only
+local   all         all                               md5
+# IPv4 local connections:
+host    all         all         127.0.0.1/32          md5
+# IPv6 local connections:
+host    all         all         ::1/128               md5
+\endverbatim
+If you did this, then you have to restart the server:
+\verbatim
+root# service postgresql restart
+\endverbatim
+This was an optional step. Next, we create the database and database user
+for the node. As user \c postgres:
+\verbatim
+# su - postgres
+$ psql
+psql (version)
+Type "help" for help.
+postgres=# CREATE USER baltrad with PASSWORD 'baltrad';
+postgres=# CREATE DATABASE baltrad with OWNER baltrad;
+\endverbatim
+You can choose other names for your database and user, and you should
+probably use another password, but please keep track of them; for the
+purposes of this documentation, we'll continue using these ones. If your
+database is on another machine, then keep track of that machine's IP number!
+
+\section in_rpm Installing pre-built rpms
+All pre-built rpms can be found here: http://git.baltrad.eu/baltrad-packages/CentOS/7/5/ and you can also
+find the yum repository file here.
+
+The recommended way to install the baltrad node is to setup the server to use the baltrad node yum repository. To do that you will have to login as root and do a number of steps. 
+After that the installation and updates will hopefully be quite painless.
+
+However, before we even atempt to install the baltrad packages, several dependencies has to be installed. One in particular is that
+you will have to install the latest epel-release rpm since you need to get hold of pre-built python 3.6 binaries. This epel rpm can be found here 
+  - http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/
+  
+Then you install the epel release rpm by typing
+\verbatim
+%> rpm -Uvh epel-release*.rpm
+\endverbatim
+
+After that you should install the python 3.6 distributables available from the epel above.
+\verbatim
+%> yum install python36 python36-devel python36-libs python36-setuptools
+\endverbatim
+
+As a final step you should update the yum repository with the repo file pointing at the baltrad packages.
+
+\verbatim
+%> cd /etc/yum.repos.d
+%> wget http://git.baltrad.eu/baltrad-packages/CentOS/7/5/current/baltrad-package.repo
+%> yum update
+%> (install epel, see howtos)
+%> yum install python36 python36-devel python36-libs python36-setuptools
+%> yum install `yum list | grep baltrad-repo | awk '{print $1;}'`
+\endverbatim
+
+As can be seen in the description above, the install is installing all available packages from the baltrad-repo
+since there currently are no top-level packages available for installation.
+
+\subsection in_update_rpm Updating pre-built rpms
+Usually, if the baltrad node repo file has been added to the yum.repos.d folder, the baltrad node will automatically
+be notified when new updates are available. In some situations it might be necessary to first invoke
+
+\verbatim
+%> yum clean all
+\endverbatim
+
+and then 
+
+\verbatim
+%> yum update `yum list installed | grep baltrad-repo | awk '{print $1;}'`
+\endverbatim
+
+\section in_prep_node_installer Node installer
+The node installer can be used if you have decided to use a different operating system
+than CentOS/RedHat or for some other reason want to control the installation process.
+ 
+This software installation process will make heavy use of Python to fetch
 software and install it. The first thing that will be done is that the
 installer will determine if you have a Python installation that can be used
 for its purposes. If it can't find one, then it will bootstrap a Python for
@@ -84,42 +184,6 @@ tarball.
 
 BALTRAD lab software and stand-alone packages that don't communicate with
 the \e node are also available for direct download at http://git.baltrad.eu/lab
-
-\section in_ps Preparing a database
-We use a Postgre SQL server. It doesn't have to be physically located on
-the same machine that you're using to install your BALTRAD node. Start by
-checking how secure your Postgre server is. Optionally you can raise its
-security level a bit by editing the
-<tt>/var/lib/pgsql/data/pg_hba.conf</tt> file. Towards the bottom, the
-entries should appear as here:
-\verbatim
-# TYPE  DATABASE    USER        CIDR-ADDRESS          METHOD
-
-# "local" is for Unix domain socket connections only
-local   all         all                               md5
-# IPv4 local connections:
-host    all         all         127.0.0.1/32          md5
-# IPv6 local connections:
-host    all         all         ::1/128               md5
-\endverbatim
-If you did this, then you have to restart the server:
-\verbatim
-root# service postgresql restart
-\endverbatim
-This was an optional step. Next, we create the database and database user
-for the node. As user \c postgres:
-\verbatim
-# su - postgres
-$ psql
-psql (version)
-Type "help" for help.
-postgres=# CREATE USER baltrad with PASSWORD 'baltrad';
-postgres=# CREATE DATABASE baltrad with OWNER baltrad;
-\endverbatim
-You can choose other names for your database and user, and you should
-probably use another password, but please keep track of them; for the
-purposes of this documentation, we'll continue using these ones. If your
-database is on another machine, then keep track of that machine's IP number!
 
 \section in_in Installing the software
 Installation is a one-liner! The command to use is \c setup.

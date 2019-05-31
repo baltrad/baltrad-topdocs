@@ -1,6 +1,6 @@
 /** \page req Requirements
-\date December 2015
-\version 2.1
+\date May 2019
+\version 3.0
 
 \li \ref req_hw
 \li \ref req_nw
@@ -133,6 +133,10 @@ process data off line.
 
 Other required software can be managed with your distro's preferred package
 manager, e.g. RPM, yum, apt-get, etc.
+
+If you are using the baltrad yum repository, the dependencies will be defined
+in the rpms so there will be indiciations on which dependencies are missing. 
+Otherwise, if using the node installer, the following requirements are a minimum.
 
 \li An installed Java SDK, currently OpenJDK or SUN JDK (> 1.6)
 \li gcc/g++/gcc-c++ (version 4.1 or higher)

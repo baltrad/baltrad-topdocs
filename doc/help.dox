@@ -1,6 +1,6 @@
 /** \page help Getting post-installation help
-\date December 2015
-\version 2.2
+\date May 2019
+\version 3.0
 
 The various subsystems' built-in documentation will be generated
 automatically during \ref install. This is detailed technical documentation

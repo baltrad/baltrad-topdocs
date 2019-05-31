@@ -1,6 +1,6 @@
 /** \page faq Frequently Asked Questions
-\date December 2015
-\version 2.2
+\date May 2019
+\version 3.0
 
 \htmlonly<hr>\endhtmlonly
 
@@ -177,9 +177,12 @@ developers scattered throughout the region couldn't agree on a single
 language to use. So we let ourselves be inspired by Google who use three
 languages. The ones we have chosen are C/C++, <a
 href="http://java.com/" target="_blank">Java</a>, and
-<a href="http://python.org/" target="_blank">Python</a>. The amount of C++
-code has dropped recently after we migrated one of our core subsystems to
-Python and Java, so C++ is no longer part of the core system. 
+<a href="http://python.org/" target="_blank">Python</a>. At one stage of the project
+C++ dropped in favour for Python and Java in one of our core subsystems, 
+so C++ is no longer part of the core system. 
+
+From revision 3.0 we have dropped Python 2.7 support in favour for Python 3.6 since
+Python 2.7 soon will reach it's end of line. 
 
 We also use some other scripting tools for specific purposes. For
 example, <a href="http://groovy.codehaus.org/" target="_blank">Groovy
@@ -386,34 +389,7 @@ As mentioned above, we don't reinvent wheels unnecessarily and we have
 developed our software using C/C++, Java, and Python. We therefore have a
 set of dependencies that is probably larger than you are accustomed
 to. Note, however, that you do not have to download and install these
-yourself. Our installer does it for you. Here is a table containing these
-dependencies.
-\htmlonly
-<table border="1">
-<tr><th>Package</th> <th>Version</th> <th>Description</th></tr>
-<tr><td>Apache ant</td> <td>1.8.0</td> <td>Java build tool</td></tr>
-<tr><td>Apache tomcat</td> <td>6.0.33</td> <td>Web servlet container</td></tr>
-<tr><td>cURL</td> <td>7.19.0</td> <td>Network communications functionality</td></tr>
-<tr><td>expat</td> <td>2.0.1</td> <td>XML library</td></tr>
-<tr><td>HDF5</td> <td>1.8.5-patch1</td> <td>Hierarchical Data Format
-version 5</td></tr>
-<tr><td>HDF-Java</td> <td>2.6.1</td> <td>Java API to HDF5</td></tr>
-<tr><td>HL-HDF</td> <td>0.7</td> <td>SMHI's high-level C and Python APIs to HDF5</td></tr>
-<tr><td>keyCzar</td> <td>0.7b</td> <td>Google's cryptographic toolkit for
-both Java and Python, used to manage private and public keys</td></tr>
-<tr><td>NumPy</td> <td>1.3.0</td> <td>Package for powerful manipulation of
-numerical arrays and scientific computing in Python</td></tr>
-<tr><td>PROJ.4</td> <td>4.7.0</td> <td>Cartographic projections library</td></tr>
-<tr><td>PyASN1</td> <td>0.1.2</td> <td>Library for working with ASN.1-based
-protocols in Python</td></tr>
-<tr><td>PyCrypto</td> <td>2.4.1</td> <td>Python Cryptography Toolkit</td></tr>
-<tr><td>PycURL</td> <td>7.19.0</td> <td>Python interface to cURL</td></tr>
-<tr><td>Python</td> <td>2.6.4</td> <td>Python programming language and interpreter</td></tr>
-<tr><td>Python Imaging Library</td> <td>1.1.7</td> <td>Manipulation of
-generic image objects in Python</td></tr>
-<tr><td>ZLIB</td> <td>1.2.4</td> <td>Compression library</td></tr>
-</table>
-\endhtmlonly
+yourself. Our installer does it for you.
 
 Some of the BALTRAD software packages written in Java have included
 third-party dependencies and are managed by these packages. An example of
@@ -467,8 +443,6 @@ can be considered to be in the pipeline. These are currently:
 classifier and attenuation correction</td></tr>
 <tr><td>bRack</td> <td>C++, Python</td> <td>Anomaly detection and removal,
 product generation including injective compositing</td></tr>
-<tr><td>RADVOL-QC</td> <td>C</td> <td>Suite of quality-control and
-characterization algorithms for polar data.</td></tr>
 </table>
 \endhtmlonly
 These packages are found in our 
@@ -478,8 +452,67 @@ together with stand-alone packages like the BALTRAD WMS package.
 \htmlonly<hr>\endhtmlonly
 
 \section faq_inst How do you install the system?
-The node-installer pakage will install those parts of the system that you
-want to use. This is done by downloading the node-installer package itself
+There are two ways to install the system. Either using the node installer \ref faq_inst_node_installer 
+or as packages \ref faq_inst_packages.
+
+\subsection faq_inst_packages How do you install rpm packages
+As of BALTRAD 3.0 we have started the work to allow the system to be installed
+using traditional package managers like rpm or debian packages. Currently we
+only have full support for installing BALTRAD as rpm:s. We also provide a yum
+repository that can be used to simplify the installation even further since yum
+will ensure that the necessary third party packages are installed. In the future
+we also hope that we will be able to provide the system as debian packages.
+
+There are two basic approaches to install the software from the rpms. Either you
+download the rpm:s manually (from http://git.baltrad.eu/baltrad-packages/CentOS/7/5/) and install them with yum or 
+you can add the baltrad-package.repo to your yum installation catalogue and install them that way.
+
+The recommended approach is to use the yum-repository since that will provide information about updates.
+
+To setup the yum-repo, you will have to login as root and do a number of steps. After that the installation and
+updates will hopefully be quite painless.
+
+However, before we even atempt to install the baltrad packages, several dependencies has to be installed. The first thing
+you will have to do is to install the latest epel-release rpm which you can find here 
+  - http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/
+  
+Then you install the epel release rpm by typing
+\verbatim
+%> rpm -Uvh epel-release*.rpm
+\endverbatim
+
+After that you should install postgres and the python 3.6 distributables available from the epel above.
+\verbatim
+%> yum install postgresql postgresql-devel postgresql-contrib postgresql-server
+%> yum install python36 python36-devel python36-libs python36-setuptools
+\endverbatim
+
+As a final step you should update the yum repository with the repo file pointing at the baltrad packages.
+
+\verbatim
+%> cd /etc/yum.repos.d
+%> wget http://git.baltrad.eu/baltrad-packages/CentOS/7/5/current/baltrad-package.repo
+%> yum update
+%> (install epel, see howtos)
+%> yum install python36 python36-devel python36-libs python36-setuptools
+%> yum install `yum list | grep baltrad-repo | awk '{print $1;}'`
+\endverbatim
+
+In some cases you will have to expire the cache to be notified that new packages are available and
+that can be done by
+\verbatim
+%> yum clean expire-cache
+%> yum update
+\endverbatim
+
+
+\subsection faq_inst_node_installer
+The node-installer package will install those parts of the system that you
+want to use. The node-installer should work on most linux-based operating systems. It
+can be used in the situations where there are no pre-built packages for your
+operating system.
+
+This installation is done by downloading the node-installer package itself
 from http://git.baltrad.eu/git and downloading a snapshot, or the tarball
 from http://git.baltrad.eu/manual/releases.html. This is a small package. 
 \verbatim

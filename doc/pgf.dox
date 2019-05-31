@@ -1,6 +1,6 @@
 /** \page pgf Processing data
-\date December 2015
-\version 2.2
+\date May 2019
+\version 3.0
 
 Your node should now be receiving data from your own radar(s), and
 exchanging data safely and smoothly with other nodes. This is where you can
