@@ -28,20 +28,18 @@ alone, please consult that package's INSTALL file.
 \li \ref in_up
 \li \ref in_ref
 
+
 \section in_prep Preparation - what's going to happen
-Double-check \ref req_sw to make sure you have installed a 64-bit
-Linux. Make sure all the required software is installed and at least the
-versions given in the table.
+As of release 3.0 we have added automatic building of RPMs that can be used on
+both RedHat and CentOS 7.5 and above which is the recommended way to install the
+software, please refer to \ref in_rpm. We realise that some users are not able to use 
+RedHat or CentOS and in those cases we also provide the old legacy node installer.
 
-There are two different ways to install the software. Either by using the
-pre-built rpms that are available at http://git.baltrad.eu/baltrad-packages/CentOS/7/5/ or
-else by using the node-installer. The installation from rpm is the recommended approach
-but obviously this isn't possible in all situations and then the node installer
-is there to help out.
+This means that there are two different ways to install the software and it's
+up to the user to decide what is the preferred way.
 
-The node-installer tries to provide a generic way to install the software on most
-linux distributions. The rpms on the other hand make the installation process simple
-and is also provided as a yum-repository.
+In both situations, it's essential that you have installed a 64-bit Linux and if
+using the node installer that the requirements in \req req_sw is installed.  
 
 \section in_ps Preparing a database
 We use a Postgre SQL server. It doesn't have to be physically located on
@@ -106,13 +104,15 @@ As a final step you should update the yum repository with the repo file pointing
 %> cd /etc/yum.repos.d
 %> wget http://git.baltrad.eu/baltrad-packages/CentOS/7/5/current/baltrad-package.repo
 %> yum update
-%> (install epel, see howtos)
 %> yum install python36 python36-devel python36-libs python36-setuptools
 %> yum install `yum list | grep baltrad-repo | awk '{print $1;}'`
 \endverbatim
 
 As can be seen in the description above, the install is installing all available packages from the baltrad-repo
 since there currently are no top-level packages available for installation.
+
+After the installation of the BALTRAD rpms it is time to configure the system. The configuration is performed
+by using a tool "baltrad-config" which also has been installed, please refer to \ref config_rpm.
 
 \subsection in_update_rpm Updating pre-built rpms
 Usually, if the baltrad node repo file has been added to the yum.repos.d folder, the baltrad node will automatically

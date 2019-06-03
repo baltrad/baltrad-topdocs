@@ -1,0 +1,148 @@
+/** \page config_rpm RPM Configuration
+\date May 2019
+\version 3.0
+
+Congratulations! If you've come this far and installed a baltrad node
+from rpms you are ready to take on the setup and configuration of a node
+before starting to use the system.
+
+\section config_rpm_baltrad_config The baltrad-config tool
+If you have installed the software using the pre-built rpms there hasn't been any
+interactive steps for setting up the basic configuration of the system and you
+will probably not even be able to start the node right now.
+
+All configuration files for a BALTRAD node will reside somewhere in \b /etc/baltrad
+depending on which modules has been installed. However, since there are several
+different configuration files a configuration tool has been developed that helps
+out in the setup process.
+
+At first installation you should create a generic configuraton file that will be 
+used for setting up the system. This configuration file can then be used whenever
+installing a new system or creating a mirror system.
+
+First you should create a base configuration file setup with standard values.
+\verbatim
+%> sudo baltrad-config init --conf=localhost.properties --create-config
+\endverbatim
+
+Then edit 'localhost.properties' with a text editor. 
+
+\verbatim
+# General configuration settings
+# Specifies if rave is installed or not (true, false).
+# Used to know if rave_defines.py should be configured or not.
+baltrad.with.rave = true
+
+baltrad.user = baltrad
+baltrad.group = baltrad
+
+
+# postgres database specifics
+baltrad.db.username = baltrad
+baltrad.db.password = baltrad
+baltrad.db.hostname = localhost
+baltrad.db.dbname = baltrad
+
+baltrad.node.name = localhost.localdomain
+baltrad.node.address = http://127.0.0.1:8080
+baltrad.keyczar.root = /etc/baltrad/bltnode-keys
+baltrad.keystore.jks = /etc/baltrad/bltnode-keys/keystore.jks
+baltrad.dex.uri = http://localhost:8080/BaltradDex
+baltrad.db.jdbc.prepare_threshold = -1
+
+# dex & beast database script locations
+beast.sql.file.dir=/usr/share/baltrad/baltrad-beast/sql
+dex.sql.file.dir=/usr/share/baltrad/baltrad-dex/sql
+bdb.binaries=/usr/bin
+
+
+#BDB settings
+#baltrad.bdb.server.type = werkzeug
+baltrad.bdb.server.type = cherrypy
+baltrad.bdb.server.cherrypy.threads = 10
+baltrad.bdb.server.cherrypy.backlog = 5
+baltrad.bdb.server.cherrypy.timeout = 10
+baltrad.bdb.server.uri = http://localhost:8090
+baltrad.bdb.server.backend.type = sqla
+baltrad.bdb.server.backend.sqla.pool_size = 10
+baltrad.bdb.server.log.level = INFO
+baltrad.bdb.server.log.type = logfile
+baltrad.bdb.server.log.file = /var/log/baltrad/baltrad-bdb-server.log
+baltrad.bdb.server.log.id = baltrad-bdb-server
+#baltrad.bdb.server.backend.sqla.storage.type = fs
+baltrad.bdb.server.backend.sqla.storage.type = db
+baltrad.bdb.server.backend.sqla.storage.fs.path = /var/lib/baltrad/bdb_storage
+baltrad.bdb.server.auth.providers = noauth, keyczar
+baltrad.framepublisher.min_poolsize = 1
+baltrad.framepublisher.max_poolsize = 5
+baltrad.framepublisher.queuesize = 100
+
+#rave.ctpath=
+rave.pgfs=4
+rave.loglevel=info
+rave.logid='PGF[rave.localhost.localdomain]'
+
+
+# Additional post config scripts.
+# These scripts are called as python scripts with the only additional argument pointing at this
+# property file so you can specify more properties in addition to the ones above.
+# The naming of the post config script properties should be baltrad.post.config.script.<N> 
+# where N is a sequential number running from 1, and upward (1,2,3....).
+#baltrad.post.config.script.1=..../xyz.py
+#baltrad.post.config.script.2=..../xyz2.py
+\endverbatim
+
+\section config_baltrad_config_setup baltrad-config setup
+After the configuration file has been updated properly it is time to setup the system
+which is done by using two simple commands.
+
+Unless you already have a directory (/etc/baltrad/bltnode-keys) with both the public and private keys
+as well as the key store you want to create the keys.
+\verbatim
+baltrad ~]$ sudo baltrad-config init --conf=localhost.properties --create-keys
+\endverbatim
+
+After you have answered the questions and the keys has been setup. It is time to
+update the nodes configuration which is done by executing:
+
+\verbatim
+baltrad ~]$ sudo baltrad-config setup --conf=localhost.properties
+\endverbatim
+
+If you want to initialize the database as well, you can add --install-database
+
+\verbatim
+baltrad ~]$ sudo baltrad-config setup --conf=localhost.properties --install-database
+\endverbatim
+
+\section config_baltrad_config_final_touches Final touches
+
+After the node has been configured and setup you will have to do some steps to ensure that
+the node behaves like you can expect from a system service.
+
+There are 3 different systemd services installed that has been added to /usr/lib/systemd/system. 
+These are 
+ - \b /usr/lib/systemd/system/bdbserver\b.service      <br> For controling the baltrad database service
+ - \b /usr/lib/systemd/system/raved\b.service          <br> For controlling the rave product generator
+ - \b /usr/lib/systemd/system/baltrad-node\b.service   <br> For controlling the baltrad data exchange node
+ 
+To start these service, it's just to type
+ 
+\verbatim
+baltrad ~]$ sudo service bdbserver start
+baltrad ~]$ sudo service raved start
+baltrad ~]$ sudo service baltrad-node start
+\endverbatim
+
+Since we also want the services to be automatically started at boot
+
+\verbatim
+baltrad ~]$ sudo systemctl enable raved
+baltrad ~]$ sudo systemctl enable baltrad-node
+baltrad ~]$ sudo systemctl enable bdbserver 
+\endverbatim
+
+Now, when the node is running it's time to configure the operational parts of the system which are the same 
+as when using the node installer for installation. Please refer to \ref con_pwd.
+
+*/
