@@ -22,7 +22,7 @@ installing a new system or creating a mirror system.
 
 First you should create a base configuration file setup with standard values.
 \verbatim
-%> sudo baltrad-config init --conf=localhost.properties --create-config
+%> sudo baltrad-config init --conf=localhost.properties
 \endverbatim
 
 Then edit 'localhost.properties' with a text editor. 
@@ -35,7 +35,6 @@ baltrad.with.rave = true
 
 baltrad.user = baltrad
 baltrad.group = baltrad
-
 
 # postgres database specifics
 baltrad.db.username = baltrad
@@ -54,7 +53,6 @@ baltrad.db.jdbc.prepare_threshold = -1
 beast.sql.file.dir=/usr/share/baltrad/baltrad-beast/sql
 dex.sql.file.dir=/usr/share/baltrad/baltrad-dex/sql
 bdb.binaries=/usr/bin
-
 
 #BDB settings
 #baltrad.bdb.server.type = werkzeug
@@ -81,7 +79,8 @@ baltrad.framepublisher.queuesize = 100
 rave.pgfs=4
 rave.loglevel=info
 rave.logid='PGF[rave.localhost.localdomain]'
-
+rave.centerid=ORG:82
+rave.qitotalmethod=minimum
 
 # Additional post config scripts.
 # These scripts are called as python scripts with the only additional argument pointing at this
@@ -93,20 +92,22 @@ rave.logid='PGF[rave.localhost.localdomain]'
 \endverbatim
 
 \section config_baltrad_config_setup baltrad-config setup
-After the configuration file has been updated properly it is time to setup the system
-which is done by using two simple commands.
+After the configuration file has been updated properly it is time to setup the system.
 
-Unless you already have a directory (/etc/baltrad/bltnode-keys) with both the public and private keys
-as well as the key store you want to create the keys.
-\verbatim
-baltrad ~]$ sudo baltrad-config init --conf=localhost.properties --create-keys
-\endverbatim
+The configuration is done by executing baltrad-config with the argument setup. Unless you already have a directory
+(/etc/baltrad/bltnode-keys) with both the public and private keys as well as the key store you want to create the keys
+which is done by adding --create-keys to the setup command like.
 
-After you have answered the questions and the keys has been setup. It is time to
-update the nodes configuration which is done by executing:
+This means that you want to use one of the two variants below
 
 \verbatim
 baltrad ~]$ sudo baltrad-config setup --conf=localhost.properties
+\endverbatim
+
+or
+
+\verbatim
+baltrad ~]$ sudo baltrad-config setup --conf=localhost.properties --create-keys
 \endverbatim
 
 If you want to initialize the database as well, you can add --install-database
@@ -129,9 +130,9 @@ These are
 To start these service, it's just to type
  
 \verbatim
-baltrad ~]$ sudo service bdbserver start
-baltrad ~]$ sudo service raved start
-baltrad ~]$ sudo service baltrad-node start
+baltrad ~]$ sudo systemctl start bdbserver
+baltrad ~]$ sudo systemctl start raved
+baltrad ~]$ sudo systemctl start baltrad-node
 \endverbatim
 
 Since we also want the services to be automatically started at boot
