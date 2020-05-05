@@ -46,6 +46,7 @@ baltrad.node.name = localhost.localdomain
 baltrad.node.address = http://127.0.0.1:8080
 baltrad.keyczar.root = /etc/baltrad/bltnode-keys
 baltrad.keystore.jks = /etc/baltrad/bltnode-keys/keystore.jks
+baltrad.keystore.password = password
 baltrad.dex.uri = http://localhost:8080/BaltradDex
 baltrad.db.jdbc.prepare_threshold = -1
 
@@ -53,6 +54,7 @@ baltrad.db.jdbc.prepare_threshold = -1
 beast.sql.file.dir=/usr/share/baltrad/baltrad-beast/sql
 dex.sql.file.dir=/usr/share/baltrad/baltrad-dex/sql
 bdb.binaries=/usr/bin
+
 
 #BDB settings
 #baltrad.bdb.server.type = werkzeug
@@ -75,12 +77,29 @@ baltrad.framepublisher.min_poolsize = 1
 baltrad.framepublisher.max_poolsize = 5
 baltrad.framepublisher.queuesize = 100
 
+#BEAST settings
+beast.admin.mailer.encoding = UTF-8
+beast.admin.mailer.host = localhost
+beast.admin.mailer.port = 25
+beast.admin.mailer.username = 
+beast.admin.mailer.password = 
+beast.admin.mailer.from = 
+beast.admin.mailer.transport.protocol = smtp
+beast.admin.mailer.smtp.auth = false
+beast.admin.mailer.smtp.starttls.enable = false
+
+#BEAST exchange pool settings
+beast.pooled.publisher.pool.core.size = 1
+beast.pooled.publisher.pool.max.size = 5
+beast.pooled.publisher.queue.size = 100
+
 #rave.ctpath=
 rave.pgfs=4
 rave.loglevel=info
 rave.logid='PGF[rave.localhost.localdomain]'
 rave.centerid=ORG:82
 rave.qitotalmethod=minimum
+
 
 # Additional post config scripts.
 # These scripts are called as python scripts with the only additional argument pointing at this
@@ -91,23 +110,38 @@ rave.qitotalmethod=minimum
 #baltrad.post.config.script.2=..../xyz2.py
 \endverbatim
 
+\section config_baltrad_config_setup baltrad-config create_keys
+Unless you already have a directory (/etc/baltrad/bltnode-keys) with both the public and private keys as well as the keystore you want to create the keys
+which is done by using the create_keys command. Most basic variant is :
+
+\verbatim
+baltrad ~]$ sudo baltrad-config create_keys --conf=localhost.properties
+\endverbatim
+
+The create_keys command will use the configuration properties for most of the setup unless otherwise specified with the available options. Password however will either be 
+queried for during the creation step or else it should be specified as an option. If the keystore is created, this password will be written to the specified 
+configuration file.
+
+Unless --keys-root is specified, then the value for property "baltrad.keyczar.root" will be used.
+
+Unless --keystore is specified, then the value for property "baltrad.keystore.jks" will be used.
+
+If --keys-root or --keystore is specified, then the properties file will be updated with new values.
+
+You can also simplify the creation by adding --password which will disable the query for password during keystore creation. As well as --dname which will leave out 
+the questions for the distinguished name. This means that a full example could be:
+
+\verbatim
+baltrad ~]$ baltrad-config create_keys --conf=localhost.properties --keystore=/tmp/keys/keystore.jks --keys-root=/tmp/keys --password=mysecretpassword --dname="CN=BALTRAD, OU=Unit, O=Org, L=City, ST=State, C=SE"
+\endverbatim
+
 \section config_baltrad_config_setup baltrad-config setup
 After the configuration file has been updated properly it is time to setup the system.
 
-The configuration is done by executing baltrad-config with the argument setup. Unless you already have a directory
-(/etc/baltrad/bltnode-keys) with both the public and private keys as well as the key store you want to create the keys
-which is done by adding --create-keys to the setup command like.
-
-This means that you want to use one of the two variants below
+The configuration is done by executing baltrad-config with the argument setup. 
 
 \verbatim
 baltrad ~]$ sudo baltrad-config setup --conf=localhost.properties
-\endverbatim
-
-or
-
-\verbatim
-baltrad ~]$ sudo baltrad-config setup --conf=localhost.properties --create-keys
 \endverbatim
 
 If you want to initialize the database as well, you can add --install-database
