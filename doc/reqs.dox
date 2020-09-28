@@ -161,8 +161,11 @@ code has dropped recently after we migrated one of our core subsystems to
 Python and Java, so C++ is no longer part of the core system. 
 
 We also use some other other scripting tools for specific purposes. For
-example, <a href="http://groovy.codehaus.org/" target="_blank">Groovy
+example, <a href="https://groovy-lang.org/" target="_blank">Groovy
 scripting</a> (based on Java) is used for prototyping well-defined tasks.
+Groovy was previously hosted on Codehaus but has now moved to above link. 
+You can find some historic information about this 
+<a href="https://projectmanagernews.com/general/most-important-projects-codehaus/" target="_blank">here</p>.
 
 
  */
