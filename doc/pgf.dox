@@ -16,11 +16,18 @@ to it.
 \li \ref pgf_bak
 \li \ref pgf_how
 \li \ref pgf_prep
+\li \ref pgf_ad
 \li \ref pgf_qm
 \li \ref pgf_vol
 \li \ref pgf_cp
 \li \ref pgf_comp
+\li \ref pgf_site2d
 \li \ref pgf_gm
+\li \ref pgf_acrr
+\li \ref pgf_gra
+\li \ref pgf_wrwp
+\li \ref pgf_scansun
+\li \ref pgf_groovy_scripts
 \li \ref pgf_cl
 \li \ref pgf_scr
 \li \ref pgf_io
@@ -117,7 +124,7 @@ and pressing the "Create" button, e.g. for the bRopo package:
 \image html pgf_cqc.png
 This is a little tricker than it first seems, because the PGF must
 recognize the "Name" that you have entered. There are several quality controls
-available and might differ depending on what product generator that is used and 
+available and might differ depending on what product generator that is used and
 what components that has been installed.
 
 At the time of this documents writing, the following quality controls are available:
@@ -165,7 +172,7 @@ for each type of scan strategy.
 Here is an example of a volume route used with Swedish data.
 \image html pgf_vol.png
 As soon as the bottom scan is received, the rule will activate and will
-monitor inbound scans from any of the selected sources. 
+monitor inbound scans from any of the selected sources.
 As soon as the top scan is received for a given source, the job will
 run. The timeout of 900 seconds (15 min) is very generous and can be
 reduced. If the top scan hasn't been received before the timeout is
@@ -187,7 +194,7 @@ scans, quality controlling them if this has been selected, and then inject
 the resulting volume into the node.
 
 \section pgf_cp Defining geographic projections and Cartesian areas
-BALTRAD software uses the 
+BALTRAD software uses the
 <a href="http://http://trac.osgeo.org/proj/" target="_blank">PROJ.4</a>
 projections library to navigate data. In the toolbox, there are tools
 available to help you do this. Normally, we would refer directly to the
@@ -244,7 +251,7 @@ projection_resolution(m) = ground_resolution(m) x 1 / cos(lat_ts)
 Our radar is close to 60 degrees north, so let's use this latitude of true
 scale for the same of simplicity. If we want a real resolution on the
 ground of one kilometer, the projection's resolution will be two
-kilometers. Convenient. This is used when defining the Cartesian area: 
+kilometers. Convenient. This is used when defining the Cartesian area:
 \verbatim
 $ area_registry --make --identifier=sevar_gmaps \
 --description="Google Maps area for Vara" --proj_id=gmaps --files=sevar.h5 \
@@ -307,7 +314,7 @@ available areas.
 
 Prodpar is not used in the composite route as a selection filter. It only provides
 the PGF with a value to use during the product generation. That means that there is
-a limitation on the PPI method, only the lowest elevation will be used as a selection 
+a limitation on the PPI method, only the lowest elevation will be used as a selection
 criteria if SCAN-based selection has been chosen.
 
 The observant reader will probably recognize that the PVOL route above also
@@ -329,7 +336,7 @@ works. Everything's a composite ...
 
 \section pgf_site2d Site 2D products
 If you want to generate single site cartesian products you can use the Site 2D route
-instead. It almost works like the composite route with a couple of exceptions. 
+instead. It almost works like the composite route with a couple of exceptions.
 
 First, it triggers immediately when a source arrives matching the source-name and the prodpar. This
 means that when specifying PPI, prodpar and SCAN-based. The exact angle as specified in prodpar will
@@ -353,7 +360,7 @@ you need to do manually before this service will work for you.
 
 \subsection pgf_gm_ap Configuring your web server
 
-First thing to do is preparing a file containing geographic area definitions 
+First thing to do is preparing a file containing geographic area definitions
 to use with the Google Maps plugin. To generate areas definition file, do the
 following:
 
@@ -368,10 +375,10 @@ The name of the file \c smhi-areas.xml might be a bit confusing, but it actually
 contains different product definitions.
 \endnote
 
-Assuming that all went fine, a file called \c products.js will be created in 
-<tt>$prefix/rave_gmap/web</tt> directory. It contains some area definitions we 
+Assuming that all went fine, a file called \c products.js will be created in
+<tt>$prefix/rave_gmap/web</tt> directory. It contains some area definitions we
 have used while developing the system. They can be replaced with your new one,
-or your new one can be added - refer to \ref pgf_gm_gm section to learn how to 
+or your new one can be added - refer to \ref pgf_gm_gm section to learn how to
 do that.
 
 Next, make sure your web server knows about this plugin. We have integrated
@@ -393,9 +400,9 @@ root# service httpd restart
 
 \subsection pgf_gm_ap_alt Alternative web server configuration
 
-In case your system doesn't come with pre-installed apache server, or for some 
-reason you need a custom setup, you might want to install it manually. 
-Here are the steps necessary to install apache2 web server under Ubuntu 
+In case your system doesn't come with pre-installed apache server, or for some
+reason you need a custom setup, you might want to install it manually.
+Here are the steps necessary to install apache2 web server under Ubuntu
 operating system.
 
 First, install the required packages:
@@ -404,16 +411,16 @@ First, install the required packages:
 sudo apt-get install apache2
 sudo apt-get install php5
 sudo apt-get install libapache2-mod-php5
-\endverbatim 
+\endverbatim
 
-Then point the server to the right \p DocumentRoot directory. In order 
+Then point the server to the right \p DocumentRoot directory. In order
 to achieve this, edit the following configuration file:
 
 \verbatim
 /etc/apache2/sites-available/default
 \endverbatim
 
-Set the \p DocumentRoot option so it points to your web data directory: 
+Set the \p DocumentRoot option so it points to your web data directory:
 
 \verbatim
 DocumentRoot /opt/baltrad/rave_gmap/web
@@ -421,7 +428,7 @@ DocumentRoot /opt/baltrad/rave_gmap/web
 
 Save the file and restart your web server:
 
-\verbatim 
+\verbatim
 sudo service apache2 restart
 \endverbatim
 
@@ -445,11 +452,11 @@ for Google Maps each time an input file for it is generated.
 \subsection pgf_gm_gm Configuring the plugin itself
 The final step is for you to configure the plugin itself, so that it
 contains a selectable product menu item that matches the product you're
-generating. We will use \c products.js file that you've generated in 
+generating. We will use \c products.js file that you've generated in
 \ref pgf_gm_ap section. As was mentioned above, the file contains some default
-area definitions. They can be replaced with your new one, or new one can be 
-added. Continuing with our example from Vara, a corresponding entry for it makes 
-use of the corner coordinates we determined earlier in \ref pgf_cp_area and the 
+area definitions. They can be replaced with your new one, or new one can be
+added. Continuing with our example from Vara, a corresponding entry for it makes
+use of the corner coordinates we determined earlier in \ref pgf_cp_area and the
 radar's location:
 \verbatim
 //Product sevar_gmaps, Vara 1 km
@@ -484,7 +491,7 @@ job is triggered by a scheduler. So besides creating the route you will
 have to add a scheduled job.
 
 There are a number of things that the user has to be aware of when creating
-the ACRR rule. 
+the ACRR rule.
 
 - Object Type can be either IMAGE or COMP. This is the object type of the composites
 that should be used in the accumulation. As a rule it should be COMP but you can
@@ -497,7 +504,7 @@ in the accumulation. If specifying 4 files per hour. The interval will be 15 min
 - Acceptable loss is specified in percent (0-100) and describes how large loss that is accepted
 before the accumulation is ignored.
 
-\image html pgf_acrr.png 
+\image html pgf_acrr.png
 
 After you have setup the ACRR route. It is time to setup the schedule. The easiest way to do this is
 to use the provided scheduler in the user interface.
@@ -525,7 +532,7 @@ if __name__ == "__main__":
   BaltradFrame.send_message(msg, "http://localhost:8080/BaltradDex")
 \endverbatim
 
-The ID is just for traceability so this can be whatever. The name is the name of the route. 
+The ID is just for traceability so this can be whatever. The name is the name of the route.
 \b NOTE: Most of the routes does not support triggering.
 
 \section pgf_gra Gauge Radar Adjustment (GRA)
@@ -542,7 +549,7 @@ by using the rave dom object \b rave_dom_db.rave_observation.
 If you want to try to use the functionality provided by rave to import the synop data in FM12 format
 you will be using the fm12_importer script in the rave bin folder. But first, you need to get the
 fm12 messages somehow. One alternative is to subscribe them from GISC. The fm12_importer is using
-inotify for monitoring one folder so the fm12 messages should be placed in that folder. 
+inotify for monitoring one folder so the fm12 messages should be placed in that folder.
 
 Before you start the fm12_importer daemon you will also have to setup information about
 the stations that are delivered in the fm12 messages. This can be done by importing a flatfile
@@ -554,10 +561,10 @@ Download the most recent file and import it with the following command
 %> python bin/wmo_station --uri=postgresql://<dbuser>:<dbpwd>@<dbhost>/<dbname> --flatfile=<flatfile> import
 \endverbatim
 
-When that has been done, it's just to start the fm12 importer daemon.  
+When that has been done, it's just to start the fm12 importer daemon.
 
 \verbatim
-%> /opt/baltrad/rave/bin/fm12_importer --monitored=/gisc/fm12 --pidfile=/opt/baltrad/rave/etc/fm12_importer.pid 
+%> /opt/baltrad/rave/bin/fm12_importer --monitored=/gisc/fm12 --pidfile=/opt/baltrad/rave/etc/fm12_importer.pid
   --logfile=/opt/baltrad/rave/etc/fm12_importer.log --catchup --janitor daemon
 \endverbatim
 
@@ -568,7 +575,7 @@ As you can see, the command is quite self-explanatory. A couple of notes might b
 have been processed
 - daemon just says that the process should be started as a daemon.
 
-\subscection rave_pgf_gra Creating the GRA route
+\subsection rave_pgf_gra Creating the GRA route
 The GRA route is very similar to the ACRR route in both how it behaves and
 that it is triggered by a scheduler.
 
@@ -581,8 +588,8 @@ First term UTC is 6 and interval is 12, the periods will be 0600-1800, 1800-0600
 Since the synops might arrive later than for example 0600, we have scheduled the coefficients
 to be run one hour later, i.e. at 0700 and 1900.
 
-If you are using the Rave PGF you should be aware that the coefficients can be generated for 
-any area but they will be the same for all GRA adjustments. Hence, just have one GRA route 
+If you are using the Rave PGF you should be aware that the coefficients can be generated for
+any area but they will be the same for all GRA adjustments. Hence, just have one GRA route
 that uses a decently sized area.
 
 \b NOTE: It is not relevant to specify a too small interval, a good interval is probably
@@ -594,7 +601,7 @@ When you have setup and scheduled the GRA route to be executed the gra-coefficie
 be generated. Since the number of radar-gauge observations will be quite small at any
 given time we are using a merge period of a number of terms. This can be defined in the
 variable MERGETERMS in rave/Lib/rave_defines.py. The current value assumes a 12-hour
-interval and 20 terms giving a 10 day period for calculating the gra coefficients.  
+interval and 20 terms giving a 10 day period for calculating the gra coefficients.
 
 \section pgf_wrwp Weather Radar Wind Profiles (WRWP)
 The route for generating wind profiles is quite simple. It is triggered on volumes
@@ -606,7 +613,7 @@ The interval in this case is specifying how meters each section should be up to 
 maximum height. So in the case of max height = 12000 and interval = 200 the number
 of sections will be 60.
 
-\image html pgf_wrwp.png 
+\image html pgf_wrwp.png
 
 \section pgf_scansun Scanning a polar volume for sun hits
 We have added a route for scanning polar volumes for sun hits. The result of
@@ -615,7 +622,7 @@ each radar source.
 
 You can find the resulting files in <install prefix>/rave/etc/scansun/.
 
-\image html pgf_scansun.png 
+\image html pgf_scansun.png
 
 \section pgf_groovy_scripts When you are missing a must have route
 In some cases, the routes we have predefined are not enough for whatever reason.
@@ -668,14 +675,14 @@ class ScheduledComposite implements IScriptableRule {
 	private static String METHOD = "ppi"; // ppi, cappi, pcappi, pmax or max
 	private static String PRODPAR = "0.5";
 	private static String QUANTITY = "DBZH";
-	
+
 	private static Logger logger = LogManager.getLogger(Ireland5MinuteComposite.class);
-	
-	ExpressionFactory xpr; 
+
+	ExpressionFactory xpr;
 	List sources = new ArrayList();
 	Expression dateTimeAttribute;
 	Formatter formatter;
-	
+
 	Ireland5MinuteComposite() {
 		xpr = new ExpressionFactory();
 		formatter = new Formatter();
@@ -684,7 +691,7 @@ class ScheduledComposite implements IScriptableRule {
 			sources.add(xpr.literal(src))
 		}
 	}
-	
+
 	@Override
 	public IBltMessage handle(IBltMessage message) {
 		if (message instanceof BltTriggerJobMessage) {
@@ -693,7 +700,7 @@ class ScheduledComposite implements IScriptableRule {
 		}
 		return null;
 	}
-	
+
 	protected IBltMessage doHandle() {
 		DateTime now = getNow();
 		ArrayList<Expression> filters = new ArrayList<Expression>();
@@ -702,10 +709,10 @@ class ScheduledComposite implements IScriptableRule {
 		filters.add(xpr.in(xpr.attribute("_bdb/source_name"), xpr.list(sources)))
 		filters.add(xpr.ge(dateTimeAttribute, xpr.literal(getStartFromNow(now))))
 		filters.add(xpr.le(dateTimeAttribute, xpr.literal(getEndFromNow(now))))
-		
+
 		FileQuery query = new FileQuery();
 		query.setFilter(xpr.and(filters));
-		
+
 		ArrayList<String> files = new ArrayList<String>();
 		FileResult set = null;
 		try {
@@ -723,16 +730,16 @@ class ScheduledComposite implements IScriptableRule {
 			    set.close();
 			}
 		}
-		
+
 		BltGenerateMessage result = new BltGenerateMessage();
 		result.setAlgorithm("eu.baltrad.beast.GenerateComposite");
-		result.setFiles(files as String[]); 
+		result.setFiles(files as String[]);
 		DateTime nominalTime = ManagerContext.getUtilities().createNominalTime(now, 5);
 		Date date = nominalTime.getDate();
 		Time time = nominalTime.getTime();
 		result.setArguments([
-			"--area="+AREA, 
-			"--date="+new Formatter().format("%d%02d%02d",date.year(), date.month(), date.day()).toString(), 
+			"--area="+AREA,
+			"--date="+new Formatter().format("%d%02d%02d",date.year(), date.month(), date.day()).toString(),
 			"--time="+new Formatter().format("%02d%02d%02d",time.hour(), time.minute(), time.second()).toString(),
 			"--selection="+SELECTION,
 			"--anomaly-qc=" + QC,
@@ -746,14 +753,14 @@ class ScheduledComposite implements IScriptableRule {
 			//"--qitotal_field=pl.imgw.quality.qi_total",
 			"--quantity=" + QUANTITY
 			] as String[])
-		
+
 		for (String s : result.getArguments()) {
 			logger.info("Argument = " + s);
 		}
-		
+
 		return result;
 	}
-	
+
 	protected DateTime getNow() {
 		return DateTime.utcNow();
     }
@@ -761,7 +768,7 @@ class ScheduledComposite implements IScriptableRule {
 	protected DateTime getStartFromNow(DateTime dt) {
 		return dt.add(new TimeDelta().addSeconds(-(7*60)));
 	}
-	
+
 	protected DateTime getEndFromNow(DateTime dt) {
 		return dt.add(new TimeDelta().addSeconds(-10));
 	}
@@ -779,7 +786,7 @@ data contains a sun signature.
 \verbatim
 $ scansun polar_volume.h5
 \endverbatim
-An example from a Dutch radar should give e.g. 
+An example from a Dutch radar should give e.g.
 \verbatim
 #Date    Time   Elevatn Azimuth ElevSun AzimSun dBmMHzSun dBmStdd RelevSun Source
 20110111 075022    0.30  126.50   -0.78  126.84   -113.31  0.6722    -0.19 RAD:NL51,NOD:nldhl
@@ -801,13 +808,13 @@ arguments and values are looked up from a file containing them is:
 \verbatim
 $ ropo -i input_volume.h5 -o output_volume.h5 --lookup=True
 \endverbatim
-An example result is displayed in \ref faq_ia. Run 
+An example result is displayed in \ref faq_ia. Run
 \verbatim
 $ ropo --help
 \endverbatim
 to get a full listing of options.
 
-\section pgf_scr Data processing scripts 
+\section pgf_scr Data processing scripts
 Scripting is an effective development method. Not only does it allow rapid
 prototyping, it also reduces the bottlenecks in transforming a lab result
 to an operational implementation. There are also other bottlenecks that are
@@ -920,7 +927,7 @@ And they have the following function that does something really simple:
 \verbatim
 int query(SCAN *myscan) {
    int bytes_per_bin = 0;
-   printf("This scan's elevation angle is %2.1f degrees\n", myscan->elev);   
+   printf("This scan's elevation angle is %2.1f degrees\n", myscan->elev);
    printf("This scan has %ld rays\n", myscan->nazim);
    printf("This scan has %ld bins per ray\n", myscan->nrang);
    printf("The bin length is %3.1f m\n", myscan->rscale);
@@ -967,7 +974,7 @@ int map_ODIM_to_SCAN(PolarScan_t *odim_scan, SCAN *my_scan) {
    memcpy(my_scan->data, PolarScanParam_getData(dbzh), bytes);
    RAVE_OBJECT_RELEASE(dbzh);
 
-   /* Normally, we want to include enough checks to give different return 
+   /* Normally, we want to include enough checks to give different return
       codes if something goes wrong, but not in this simple case. */
    return 0;
 }
