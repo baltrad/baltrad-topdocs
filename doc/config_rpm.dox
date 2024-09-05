@@ -1,6 +1,6 @@
 /** \page config_rpm RPM Configuration
-\date May 2019
-\version 3.0
+\date Aug 2024
+\version 3.1
 
 Congratulations! If you've come this far and installed a baltrad node
 from rpms you are ready to take on the setup and configuration of a node

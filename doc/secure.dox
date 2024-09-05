@@ -1,6 +1,6 @@
 /** \page secure Security in BALTRAD
-\date May 2019
-\version 3.0
+\date Aug 2024
+\version 3.1
 
 The BALTRAD system communicates with other nodes securely, and the
 web-based user interface is also secure - sensitive data is encrypted before
