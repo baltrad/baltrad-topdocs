@@ -141,7 +141,7 @@ permanently remove the key.
 \note
 Note that the same steps have to be taken by the peer node (that is the peer
 node has to submit its public key) in order to establish two-way communication.
-\endnote
+
 
 \section sec_usr Users types, their roles and privileges
 This section is not related to those above. There are different types of
