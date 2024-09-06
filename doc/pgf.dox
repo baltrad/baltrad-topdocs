@@ -373,7 +373,7 @@ following:
 \note
 The name of the file \c smhi-areas.xml might be a bit confusing, but it actually
 contains different product definitions.
-\endnote
+
 
 Assuming that all went fine, a file called \c products.js will be created in
 <tt>$prefix/rave_gmap/web</tt> directory. It contains some area definitions we
