@@ -1,6 +1,6 @@
 /** \page dist Distribution
-\date May 2019
-\version 3.0
+\date Aug 2024
+\version 3.1
 
 We've installed and configured a BALTRAD node, injected our own data into
 it, exchanged data with other nodes, generated products with all the data,

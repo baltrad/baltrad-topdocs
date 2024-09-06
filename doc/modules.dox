@@ -1,0 +1,59 @@
+/** \page modules BALTRAD community-based weather radar networking
+\date Aug 2024
+\version 3.1
+\par Copyright 
+&copy; 2024 Swedish Meteorological and Hydrological Institute (SMHI), Norrk&ouml;ping, Sweden
+
+\par Legals
+BALTRAD is free software: you can redistribute it and/or modify
+it under the terms of the GNU Lesser General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+\par
+BALTRAD is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU Lesser General Public License for more details.
+
+\par
+You should have received a copy of the GNU Lesser General Public License
+along with BALTRAD.  If not, see http://www.gnu.org/licenses/.
+By obtaining, using, and/or copying this software and/or its associated 
+documentation, you agree that you have read, understood, and will comply
+with the following terms and conditions:
+
+\section about About
+The development of BALTRAD has been performed by a distributed partnership with funding partly from the EU's Baltic Sea Region Programme between February 2009 and January 2014 as part of the BALTRAD and BALTRAD+ projects. This partnership, including partners outside the projects, comprises the following organizations: <br><br>
+Swedish Meteorological and Hydrological Institute <br>
+Finnish Meteorological Institute <br>
+Institute of Meteorology and Water Management, Poland <br>
+Latvian Environmental Geology and Meteorological Centre <br>
+Danish Meteorological Institute <br>
+Republican Hydrometeorological Centre, Belarus <br>
+Finnish Radiation and Nuclear Safety Authority <br>
+Estonian Meteorological and Hydrological Institute <br>
+German Weather Service <br>
+Lithuanian Hydrometeorological Service under the Ministry of Environment <br>
+Norwegian Meteorological Institute <br>
+Department of Civil Engineering, Aalborg University, Denmark <br>
+Aarhus Water A/S, Denmark <br>
+Ukranian Hydrometeorological Center <br>
+Russian Federal Service for Hydrometeorology and Environmental Monitoring 
+
+Currently, the BALTRAD system is developed and maintained as an open source project.
+
+\section introduction Introduction
+The system is created from different components, so we have decided to keep this introduction to a minimum. For a more detailed introduction outlining the concepts governing how this system is build, how its various components interact, and how it all works, please read the user guide at \ref ug.
+
+If you are seeking technical details at of a given system component, please see the specific section below containing them.
+
+ - <a href="hlhdf/index.html">HLHDF</a>
+ - <a href="beast/index.html">BEAST Overview</a>
+ - <a href="BaltradDex/index.html">DEX (Data Exchange) User Guide</a>
+ - <a href="rave/index.html">Radar Analysis and Visualization Environment (RAVE)</a>
+ - <a href="bropo/index.html">FMI Anomaly detection and removal package (ROPO)</a>
+ - <a href="beamb/index.html">SMHI Beam blockage package (BEAMB)</a>
+
+
+ */

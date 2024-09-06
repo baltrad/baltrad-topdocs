@@ -1,6 +1,6 @@
 /** \page install Installation
-\date May 2019
-\version 3.0
+\date Aug 2024
+\version 3.1
 
 Welcome to the installation chapter of the user guide. BALTRAD software has
 been built and installed in several countries. If it works for us, it can work for you.
@@ -30,10 +30,10 @@ alone, please consult that package's INSTALL file.
 
 
 \section in_prep Preparation - what's going to happen
-As of release 3.0 we have added automatic building of RPMs that can be used on
-both RedHat and CentOS 7.5 and above which is the recommended way to install the
+As of release 3.1 we have added automatic building of RPMs that can be used on
+both RedHat 8 and CentOS Stream 8 and above which is the recommended way to install the
 software, please refer to \ref in_rpm. We realise that some users are not able to use 
-RedHat or CentOS and in those cases we also provide the old legacy node installer.
+RedHat or CentOS Stream 8 and in those cases we also provide the old legacy node installer.
 
 This means that there are two different ways to install the software and it's
 up to the user to decide what is the preferred way.
@@ -77,39 +77,31 @@ probably use another password, but please keep track of them; for the
 purposes of this documentation, we'll continue using these ones. If your
 database is on another machine, then keep track of that machine's IP number!
 
-\section in_rpm Installing pre-built rpms
-All pre-built rpms can be found here: http://git.baltrad.eu/baltrad-packages/CentOS/7/5/ and you can also
-find the yum repository file here.
+\section in_rpm Installing pre-built rpms (CentOS Stream 8)
+All pre-built rpms can be found here: http://rpm.baltrad.eu/CentOS/8/latest/ and you can also find the yum repository file here.
 
 The recommended way to install the baltrad node is to setup the server to use the baltrad node yum repository. To do that you will have to login as root and do a number of steps. 
 After that the installation and updates will hopefully be quite painless.
 
-However, before we even atempt to install the baltrad packages, several dependencies has to be installed. One in particular is that
-you will have to install the latest epel-release rpm since you need to get hold of pre-built python 3.6 binaries. This epel rpm can be found here 
-  - http://dl.fedoraproject.org/pub/epel/7/x86_64/Packages/e/
-  
-Then you install the epel release rpm by typing
-\verbatim
-%> rpm -Uvh epel-release*.rpm
-\endverbatim
-
-After that you should install the python 3.6 distributables available from the epel above.
-\verbatim
-%> yum install python36 python36-devel python36-libs python36-setuptools
-\endverbatim
-
-As a final step you should update the yum repository with the repo file pointing at the baltrad packages.
-
+First, you will have to fetch the repo-file to setup the Baltrad-repository and update the repositories
 \verbatim
 %> cd /etc/yum.repos.d
-%> wget http://git.baltrad.eu/baltrad-packages/CentOS/7/5/current/baltrad-package.repo
-%> yum update
-%> yum install python36 python36-devel python36-libs python36-setuptools
-%> yum install `yum list | grep baltrad-repo | awk '{print $1;}'`
+%> wget http://rpm.baltrad.eu/CentOS/8/latest/baltrad-package-latest.repo
+%> dnf update
 \endverbatim
 
-As can be seen in the description above, the install is installing all available packages from the baltrad-repo
-since there currently are no top-level packages available for installation.
+Next is to install the dependencies. Most of them should be handled automatically by the rpms but there are some things that will not work out of the box. You will need to install the epel-release as well as enabling powertools.
+
+\verbatim
+%> dnf -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
+%> dnf config-manager --set-enabled powertools
+\endverbatim
+
+Now, it is time to install the baltrad software. There are 3 main packages. Rave, baltrad-db and baltrad-node-*. These will install servers and product generators. Then there are plugins that will hook into the rave pgf. For example bropo, beamb and so on. Typically, the following command should install everything.
+
+\verbatim
+%> dnf install rave* baltrad* bropo* beamb*
+\endverbatim
 
 After the installation of the BALTRAD rpms it is time to configure the system. The configuration is performed
 by using a tool "baltrad-config" which also has been installed, please refer to \ref config_rpm.
@@ -130,7 +122,7 @@ and then
 
 \section in_prep_node_installer Node installer
 The node installer can be used if you have decided to use a different operating system
-than CentOS/RedHat or for some other reason want to control the installation process.
+than CentOS Stream/RedHat or for some other reason want to control the installation process.
  
 This software installation process will make heavy use of Python to fetch
 software and install it. The first thing that will be done is that the
@@ -141,16 +133,29 @@ should be installed, preferably not in a place where it will conflict with
 existing things, then all will be fine. The default location is
 \c /opt/baltrad.
 
-Most Linux distributions already contain almost all of the software that we
-will install, so you may be wondering why we don't use them. Versions may be
-different, and they may be built differently, e.g. without support for a
-feature we need. It's pretty likely that they'll will work, but we aren't
-taking any unnecessary risks by building known releases ourselves.
+\subsection in_notice NOTICE!!
+<b>
+BALTRAD uses some packages that has no active maintenance any longer which means that you might end
+up with some problems during the build process. The node-installer uses Python 3.6 which reachead EOL 
+in December 2021 and is not updated any longer. This in turn might cause problems during the install
+process and we are looking into how this best should be handled. At the moment we can't upgrade to
+Python >= 3.8 since we have dependencies towards keyczar and pycrypto which are not compatible.
 
-You can use our installer to download all required packages but not
-install them, enabling them to be moved to another machine that is
-protected from the Internet behind a firewall before continuing with the
-real installation. We will return to this issue later in this chapter.
+Another of the problems that has been experienced is if the gcc-version used is >= 9 there will be problems
+building Python3 or odd linking problems. This can in most cases be handled by changing the compiler used.
+On Ubuntu 21.10 you can switch gcc-version quite easy
+
+\verbatim
+%> sudo apt install gcc-8 g++-8
+%> update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 100 --slave /usr/bin/g++ g++ /usr/bin/g++-8 --slave /usr/bin/gcov gcov /usr/bin/gcov-8
+\endverbatim
+
+and then change version by
+
+\verbatim
+%> update-alternatives --config gcc
+\endverbatim
+</b>
 
 \section in_repo Repository and downloading the node-installer
 We run a
@@ -160,8 +165,8 @@ releases.
 
 The package that installs the complete BALTRAD node is called the
 <b>node-installer</b>, and it can be downloaded from the BALTRAD Git
-repository at <a href="http://git.baltrad.eu/git"
-target="_blank">http://git.baltrad.eu/git</a>, which is the repository's
+repository at <a href="https://github.com/baltrad"
+target="_blank">https://github.com/baltrad</a>, which is the repository's
 web interface. You can download a snapshot from the node-installer.git
 project, in which case you'll download a tarball (.tar.gz file).
 
@@ -170,20 +175,12 @@ download and install) a
 <a href="http://git-scm.com/download" target="_blank">Git client</a>. In
 this case, do the following:
 \verbatim
-$ git clone git://git.baltrad.eu/node-installer.git
+$ git clone https://github.com/baltrad/node-installer.git
 \endverbatim
 Doing this will download the node installer in a directory named
 <tt>./node-installer</tt>. You can immediately change to this directory and
-read the INSTALL file. Don't try to install anything before you're prepared
+read the INSTALL file. Don't try to install anything before you have prepared
 a database, as is described next.
-
-For those who don't want to use Git at all, there's our 
-<a href="http://git.baltrad.eu/manual/releases.html"
-target="_blank">Releases</a> page where you should always be able to find a
-tarball. 
-
-BALTRAD lab software and stand-alone packages that don't communicate with
-the \e node are also available for direct download at http://git.baltrad.eu/lab
 
 \section in_in Installing the software
 Installation is a one-liner! The command to use is \c setup.
@@ -292,7 +289,7 @@ to the database tables, you can safely add the \c --excludedb option to
 avoid messing with them.
 \verbatim
 $ ./setup --tomcatpwd=<> --nodename=se.smhi.balthazar --prefix=/opt/baltrad \
---jdkhome=/usr/java/jdk1.6.0_16 \
+--jdkhome=java-8-openjdk-amd64 \
 --with-psql=/usr/include/pgsql,/usr/lib64/pgsql --dbpwd=<> --excludedb \
 --with-rave --rave-dex-spoe=localhost:8080 --rave-center-id=82 \
 --with-rave-gmap --with-bropo --with-beamb --with-bufr install

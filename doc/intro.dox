@@ -1,8 +1,8 @@
 /** \mainpage Community-based weather radar networking
-\date May 2019
-\version 3.0
+\date Aug 2024
+\version 3.1
 \par Copyright 
-&copy; 2019 Swedish Meteorological and Hydrological Institute (SMHI), Norrk&ouml;ping, Sweden <br> on behalf of the BALTRAD partnership
+&copy; 2024 Swedish Meteorological and Hydrological Institute (SMHI), Norrk&ouml;ping, Sweden <br> on behalf of the BALTRAD partnership
 
 \par Legals
 BALTRAD is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@ with the following terms and conditions:
 
 Welcome to BALTRAD! This page is the first place to come to become aquainted with us. We hope you will like what you see and read.
 
-We have divided up this documentation into a Frequently Asked Questions (FAQ) part, and a User Guide part. The FAQ should probably be consulted first, because it will help you understand what BALTRAD is, and the principles guiding it, whereas the User Guide is more focussed on helping you get started with the system. Another way of putting it is that the FAQ will give you an overview and the User Guide will give you more substance.
+We have divided up this documentation into several parts. The FAQ (Frequently Asked Questions) should probably be consulted first, because it will help you understand what BALTRAD is, and the principles guiding it, whereas the User Guide is more focussed on helping you get started with the system. Another way of putting it is that the FAQ will give you an overview and the User Guide will give you more substance. You can also find detailed information about different modules in \ref modules. Information about the releases can be found <a href="RELEASE">here</a> and if you are interested in algorithms you can find them <a href="cookbook/cookbook">here</a>.
 
 The finest level of detail will be available in each software package's documentation, which is available when it is built. If you build a so-called "BALTRAD node", the documentation of the packages you decide to build will be built automatically, and that is where to look for such details.
 
@@ -41,6 +41,13 @@ TAKE ME TO ...
 \ref faq 
 
 \ref ug
+
+\ref modules
+
+<a href="cookbook/cookbook">Cookbook</a>
+
+<a href="RELEASE">Release</a>
+
 <hr>
 \htmlonly
 <table border="0">

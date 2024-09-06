@@ -1,6 +1,6 @@
 /** \page rave_navigation Navigation in RAVE 
-\date Aug 2019
-\version 3.0
+\date Aug 2024
+\version 3.1
 
 \section navigation_introduction Introduction
 Due to some observed irregularities when it comes to the differences between area definitions in RAVE and the ones written to the ODIM H5 files we investigated these irregularities and also decided to write a document about the navigation within RAVE and how it compares to the ODIM H5 area definitions.
